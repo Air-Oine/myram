@@ -1,31 +1,41 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
+import * as lodash from 'lodash';
+
+import { Book, BookStatus } from '../../model/Book';
+import { Author } from '../../model/Author';
 
 @Component({
   selector: 'page-list',
   templateUrl: 'list.html'
 })
 export class ListPage {
+  BookStatus = BookStatus;
+
   selectedItem: any;
-  icons: string[];
-  items: Array<{title: string, note: string, icon: string}>;
+  items: Array<Book>;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
     // If we navigated to this page, we will have an item available as a nav param
     this.selectedItem = navParams.get('item');
 
-    // Let's populate this page with some filler content for funzies
-    this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane',
-    'american-football', 'boat', 'bluetooth', 'build'];
-
+    // Mock
     this.items = [];
-    for (let i = 1; i < 11; i++) {
-      this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i,
-        icon: this.icons[Math.floor(Math.random() * this.icons.length)]
-      });
-    }
+    const paoliniAuthor = new Author('Paolini', 'Christopher');
+    const eragonBook = new Book('Eragon', paoliniAuthor, 'L\'héritage');
+    eragonBook.status = BookStatus.Owned;
+    eragonBook.read = true;
+    this.items.push(eragonBook);
+    
+    const platonAuthor = new Author('Platon', '');
+    const laRepubliqueBook = new Book('La république', platonAuthor);
+    laRepubliqueBook.status = BookStatus.Wanted;
+    this.items.push(laRepubliqueBook);
+  }
+
+  ngOnInit() {
+    //Sort list by collection
+    this.items = lodash.sortBy(this.items, 'collection');
   }
 
   itemTapped(event, item) {
