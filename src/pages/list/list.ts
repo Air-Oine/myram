@@ -5,6 +5,8 @@ import * as lodash from 'lodash';
 import { Book, BookStatus } from '../../model/Book';
 import { Author } from '../../model/Author';
 
+import { AddBookPage } from '../add-book/add-book';
+
 @Component({
   selector: 'page-list',
   templateUrl: 'list.html'
@@ -26,7 +28,7 @@ export class ListPage {
     eragonBook.status = BookStatus.Owned;
     eragonBook.read = true;
     this.items.push(eragonBook);
-    
+
     const platonAuthor = new Author('Platon', '');
     const laRepubliqueBook = new Book('La république', platonAuthor);
     laRepubliqueBook.status = BookStatus.Wanted;
@@ -36,6 +38,11 @@ export class ListPage {
   ngOnInit() {
     //Sort list by collection
     this.items = lodash.sortBy(this.items, 'collection');
+  }
+
+  //Go to book creation page
+  addItem() {
+    this.navCtrl.push(AddBookPage);
   }
 
   itemTapped(event, item) {

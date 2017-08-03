@@ -1,27 +1,35 @@
 <ion-header>
-  <ion-navbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
+    <ion-navbar>
+        <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Books</ion-title>
-  </ion-navbar>
+        <ion-title>Books</ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <!--TITLE  -->
-      {{item.title}}
-      <!--AUTHOR  -->
-      <p>{{item.author.firstName}} {{item.author.lastName}}</p>
-      <!--STATUS ICON  -->
-      <ion-icon *ngIf="item.status === BookStatus.Owned" name="book" item-end></ion-icon>
-      <ion-icon *ngIf="item.status === BookStatus.Wanted" name="cart" item-end></ion-icon>
-      <!--READ ICON  -->
-      <ion-icon *ngIf="item.read" name="checkmark" item-end></ion-icon>
-    </button>
-  </ion-list>
-  <div *ngIf="selectedItem" padding>
-    You navigated here from <b>{{selectedItem.title}}</b>
-  </div>
+    <ion-list>
+        <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
+        <!--TITLE  -->
+        {{item.title}}
+        <!--AUTHOR  -->
+        <p>{{item.author.firstName}} {{item.author.lastName}}</p>
+        <!--STATUS ICON  -->
+        <ion-icon *ngIf="item.status === BookStatus.Owned" name="book" item-end></ion-icon>
+        <ion-icon *ngIf="item.status === BookStatus.Wanted" name="cart" item-end></ion-icon>
+        <!--READ ICON  -->
+        <ion-icon
+            name="checkmark" 
+            item-end [color]="item.read ? 'primary' : 'exist'"></ion-icon>
+        </button>
+    </ion-list>
+
+    <!--NEW ITEM BUTTON  -->
+    <ion-fab bottom right>
+        <button ion-fab (click)="addItem()"><ion-icon name="add"></ion-icon></button>
+    </ion-fab>
+
+    <div *ngIf="selectedItem" padding>
+        You navigated here from <b>{{selectedItem.title}}</b>
+    </div>
 </ion-content>

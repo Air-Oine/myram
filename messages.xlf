@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="AddBook.label.title" datatype="html">
+        <source>Title</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">C:/Users/airon/Documents/Développement/Myram2/src/pages/add-book/add-book.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="AddBook.label.author" datatype="html">
+        <source>Author</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">C:/Users/airon/Documents/Développement/Myram2/src/pages/add-book/add-book.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="AddBook.select.author.cancel" datatype="html">
+        <source>Cancel</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">C:/Users/airon/Documents/Développement/Myram2/src/pages/add-book/add-book.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="AddBook.select.author.ok" datatype="html">
+        <source>OK</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">C:/Users/airon/Documents/Développement/Myram2/src/pages/add-book/add-book.ts</context>
+          <context context-type="linenumber">28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="AddBook.label.collection" datatype="html">
+        <source>Collection</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">C:/Users/airon/Documents/Développement/Myram2/src/pages/add-book/add-book.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="AddBook.button.save" datatype="html">
+        <source>Save</source>
+        <target/>
+        <context-group purpose="location">
+          <context context-type="sourcefile">C:/Users/airon/Documents/Développement/Myram2/src/pages/add-book/add-book.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
