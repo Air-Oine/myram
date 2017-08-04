@@ -8,7 +8,7 @@ import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
 import { AddBookPage } from '../pages/add-book/add-book';
 
-import { AuthorService } from '../storage/author.service';
+import { StorageService } from '../storage/storage.service';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -35,7 +35,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   providers: [
     StatusBar,
     SplashScreen,
-    AuthorService,
+    StorageService,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
   ]
 })

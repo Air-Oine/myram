@@ -1,5 +1,8 @@
 export class Author {
-    
-    constructor(public lastName: string, public firstName: string) {
+    public id: number = null;
+
+    constructor(
+        public lastName: string, 
+        public firstName: string) {
     }
 }
