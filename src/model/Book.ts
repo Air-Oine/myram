@@ -7,6 +7,7 @@ export class Book {
     constructor(
         public title?: string, 
         public author?: Author, 
+        public authorId: number = null, 
         public collection: string = null,
         public gender: string = null,
         public status: BookStatus = BookStatus.None,

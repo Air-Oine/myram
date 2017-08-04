@@ -4,9 +4,7 @@ import * as lodash from 'lodash';
 
 import { Book, BookStatus } from '../../model/Book';
 import { Author } from '../../model/Author';
-import { StorageService } from '../../storage/storage.service';
-
-const AUTHOR_KEY = 'author';
+import { StorageService, AUTHOR_KEY, BOOK_KEY } from '../../storage/storage.service';
 
 @IonicPage()
 @Injectable()
@@ -27,24 +25,22 @@ export class AddBookPage {
     }
 
     ionViewDidLoad() {
-
-        this.storageService.clearStorage();
-
-        this.initAuthorsObservable();
+        this.initStorage();
     }
 
     /**
      * Initialize authors list observable, and refresh the list
      */
-    initAuthorsObservable() {
+    private initStorage() {
         this.authorsObservable = this.storageService.getListObservable(AUTHOR_KEY);
         this.authorsObservable.subscribe(
-            value => {this.authors = value; console.log(value);},
+            value => this.authors = value,
             error => console.log(error),
             () => console.log('done')
         );
 
         this.storageService.init(AUTHOR_KEY, ['lastName', 'firstName']);
+        this.storageService.init(BOOK_KEY);
 
         this.storageService.loadList(AUTHOR_KEY);
     }
@@ -76,12 +72,8 @@ export class AddBookPage {
                             const newAuthor = new Author(lastName, firstName);
 
                             //Saving the author, and select him
-                            console.log('Before add');
-                            const temp = this.storageService.addObject(AUTHOR_KEY, newAuthor);
-                                                        console.log('After add');
-
-                            console.log(temp);
-                            this.book.author = temp;
+                            this.book.author = this.storageService.addObject(AUTHOR_KEY, newAuthor);
+                            this.book.authorId = this.book.author.id;
                         }
                     }
                 }
@@ -95,5 +87,11 @@ export class AddBookPage {
      */
     save() {
         console.log(JSON.stringify(this.book));
+
+        //Save the book
+        this.storageService.addObject(BOOK_KEY, this.book);
+
+        //Close the page
+        this.navCtrl.pop();
     }
 }

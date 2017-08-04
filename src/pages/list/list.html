@@ -9,11 +9,11 @@
 
 <ion-content>
     <ion-list>
-        <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
+        <button ion-item *ngFor="let item of items">
         <!--TITLE  -->
         {{item.title}}
         <!--AUTHOR  -->
-        <p>{{item.author.firstName}} {{item.author.lastName}}</p>
+        <p>{{item.author?.firstName}} {{item.author?.lastName}}</p>
         <!--STATUS ICON  -->
         <ion-icon *ngIf="item.status === BookStatus.Owned" name="book" item-end></ion-icon>
         <ion-icon *ngIf="item.status === BookStatus.Wanted" name="cart" item-end></ion-icon>

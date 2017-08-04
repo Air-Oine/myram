@@ -4,6 +4,9 @@ import * as lodash from 'lodash';
 
 const ID = 'ID';
 
+export const AUTHOR_KEY = 'author';
+export const BOOK_KEY = 'book';
+
 /**
  * Handle storage of objects
  */
@@ -51,19 +54,31 @@ export class StorageService {
     }
     
     /**
-     * Load values in DB corresponding to the object name
+     * Load values in DB corresponding to the object name (if the list hasn't loaded yet)
      * @param objectName 
      */
     loadList(objectName: string) {
-        let list = [];
+        if(this.lists[objectName] === undefined) {
+            //Init list
+            this.lists[objectName] = [];
 
-        this.storage.forEach((value, key, iterationNumber) => {
-            if(key.includes(objectName)) {
-                list.push(value);
-            }
-        }).then(() => {
-            this.refreshList(objectName);
-        });
+            this.storage.forEach((value, key, iterationNumber) => {
+                if(key.startsWith(objectName)) {
+                    this.lists[objectName].push(value);
+                }
+            }).then(() => {
+                this.refreshList(objectName);
+            });
+        }
+    }
+
+    /**
+     * Return an item from the list in memory
+     * @param objectName 
+     * @param id 
+     */
+    getElement(objectName: string, id: number) {
+        return lodash.find(this.lists[objectName], ['id', id]);
     }
 
     /**
@@ -118,11 +133,15 @@ export class StorageService {
      * Order list and send it to observable
      */
     private refreshList(objectName: string) {
-        if(this.sortFields[objectName] !== null) {
+        if(this.sortFields[objectName] !== null && this.lists[objectName].length !== 0) {
+
             this.lists[objectName] = 
                 lodash.sortBy(this.lists[objectName], this.sortFields[objectName]);
         }
         
-        this.listObservable[objectName].emit(this.lists[objectName]);
+        //Observable defined -> signal
+        if(this.listObservable[objectName] !== undefined) {
+            this.listObservable[objectName].emit(this.lists[objectName]);
+        }
     }
 }
