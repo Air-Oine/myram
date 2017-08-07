@@ -8,14 +8,15 @@
 </ion-header>
 
 <ion-content padding>
-    <form>
+    <form #form="ngForm">
 
         <!--TITLE  -->
         <ion-item>
             <ion-label i18n="@@AddBook.label.title">Title</ion-label>
             <ion-input 
                 type="text"
-                name="title" [(ngModel)]="book.title"></ion-input>
+                name="title" [(ngModel)]="book.title"
+                required></ion-input>
         </ion-item>
 
         <!--AUTHOR  -->
@@ -27,6 +28,7 @@
                         <ion-select 
                             name="author" [(ngModel)]="book.author" 
                             multiple="false" 
+                            required
                             i18n-cancelText="@@AddBook.select.author.cancel" cancelText="Cancel" 
                             i18n-okText="@@AddBook.select.author.ok" okText="OK">
 
@@ -56,7 +58,8 @@
         <!--SUBMIT  -->
         <button ion-button full
             type="submit" 
-            (click)="save()"
+            (click)="save(form)"
+            [disabled]="form.invalid"
             i18n="@@AddBook.button.save">Save</button>
     </form>
 </ion-content>

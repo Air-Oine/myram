@@ -39,9 +39,6 @@ export class AddBookPage {
             () => console.log('done')
         );
 
-        this.storageService.init(AUTHOR_KEY, ['lastName', 'firstName']);
-        this.storageService.init(BOOK_KEY);
-
         this.storageService.loadList(AUTHOR_KEY);
     }
 
@@ -85,7 +82,7 @@ export class AddBookPage {
     /**
      * Create a new book, and save it
      */
-    save() {
+    save(form) {
         console.log(JSON.stringify(this.book));
 
         //Save the book
