@@ -54,6 +54,25 @@
                 type="text"
                 name="collection" [(ngModel)]="book.collection"></ion-input>
         </ion-item>
+
+        <!--BOOK STATUS  -->
+        <ion-segment name="status" [(ngModel)]="book.status">
+            <ion-segment-button [value]="BookStatus.Wanted"
+                i18n="@AddBook.label.status.wanted">
+                <ion-icon name="search"></ion-icon>
+                Wanted
+            </ion-segment-button>
+            <ion-segment-button [value]="BookStatus.Owned"
+                i18n="@AddBook.label.status.owned">
+                <ion-icon name="book"></ion-icon>
+                Owned
+            </ion-segment-button>
+            <ion-segment-button [value]="BookStatus.None"
+                i18n="@AddBook.label.status.none">
+                <ion-icon name="close"></ion-icon>
+                None
+            </ion-segment-button>
+        </ion-segment>
         
         <!--SUBMIT  -->
         <button ion-button full

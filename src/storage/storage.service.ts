@@ -28,6 +28,7 @@ export class StorageService {
      */
     init(objectName: string, sortFields: Array<string> = null) {
         this.getCurrentIdInDB(objectName);
+
         this.setSortFields(objectName, sortFields);
     }
 
@@ -44,7 +45,7 @@ export class StorageService {
         this.storage.set(objectName + this.key[objectName], item);
 
         //Save the current key
-        this.storage.set(objectName + ID, this.key[objectName]);
+        this.storage.set(ID + objectName, this.key[objectName]);
 
         //Add in list in memory, and send it
         this.lists[objectName].push(item);
@@ -56,9 +57,11 @@ export class StorageService {
     /**
      * Load values in DB corresponding to the object name (if the list hasn't loaded yet)
      * @param objectName 
+     * @param forceReload : replace memory list by the one in DB
      */
-    loadList(objectName: string) {
-        if(this.lists[objectName] === undefined) {
+    loadList(objectName: string, forceReload: boolean = false) {
+        //List hasn't been loaded yet
+        if(this.lists[objectName] === undefined || forceReload) {
             //Init list
             this.lists[objectName] = [];
 
@@ -69,6 +72,10 @@ export class StorageService {
             }).then(() => {
                 this.refreshList(objectName);
             });
+        }
+        //Just send signal for refresh
+        else {
+            this.refreshList(objectName);
         }
     }
 
@@ -106,6 +113,25 @@ export class StorageService {
      */
     clearStorage() {
         this.storage.clear();
+    }
+
+    /**
+     * TEST : Mock datas for testing purpose
+     */
+    mockDatas() {
+        //2 authors
+        let author = {"lastName":"Paolini","firstName":"Christopher"};
+        const paolini = this.addObject(AUTHOR_KEY, author);
+
+        author = {"lastName":"Bablet","firstName":"Mathieu"};
+        const bablet = this.addObject(AUTHOR_KEY, author);
+
+        //2 books
+        let book = {"title":"Eragon","author":paolini,"authorId":2,"collection":"L'héritage","gender":null,"status":0,"read":null};
+        this.addObject(BOOK_KEY, book);
+
+        book = {"title":"Shangri-La","author":bablet,"authorId":3,"collection":"Label 619","gender":null,"status":0,"read":null};
+        this.addObject(BOOK_KEY, book);
     }
     
     /**

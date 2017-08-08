@@ -1,22 +1,36 @@
 <ion-header>
     <ion-navbar>
         <button ion-button menuToggle>
-        <ion-icon name="menu"></ion-icon>
-    </button>
+            <ion-icon name="menu"></ion-icon>
+        </button>
         <ion-title>Books</ion-title>
+        <ion-buttons end>
+            <!--TEMPORARY BUTTON  -->
+            <button (click)="mock()"><ion-icon name="refresh"></ion-icon></button>
+        </ion-buttons>
     </ion-navbar>
+    <ion-toolbar>
+        <ion-searchbar 
+            showCancelButton
+            animated="true"
+            debounce=300
+            (ionInput)="search($event)"
+            (ionCancel)="cancelSearch($event)">
+        </ion-searchbar>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
+      
     <ion-list>
-        <button ion-item *ngFor="let item of items">
+        <button ion-item *ngFor="let item of books">
         <!--TITLE  -->
         {{item.title}}
         <!--AUTHOR  -->
         <p>{{item.author?.firstName}} {{item.author?.lastName}}</p>
         <!--STATUS ICON  -->
         <ion-icon *ngIf="item.status === BookStatus.Owned" name="book" item-end></ion-icon>
-        <ion-icon *ngIf="item.status === BookStatus.Wanted" name="cart" item-end></ion-icon>
+        <ion-icon *ngIf="item.status === BookStatus.Wanted" name="search" item-end></ion-icon>
         <!--READ ICON  -->
         <ion-icon
             name="checkmark" 

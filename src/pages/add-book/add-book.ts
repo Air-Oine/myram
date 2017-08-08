@@ -13,6 +13,8 @@ import { StorageService, AUTHOR_KEY, BOOK_KEY } from '../../storage/storage.serv
     templateUrl: 'add-book.html',
 })
 export class AddBookPage {
+    BookStatus = BookStatus;
+    
     book = new Book();
     authors: Array<Author>;
     authorsObservable: EventEmitter<{}>;
@@ -22,6 +24,9 @@ export class AddBookPage {
         public navParams: NavParams,
         public storageService: StorageService,
         public alertCtrl: AlertController) {
+        
+        //Default values
+        this.book.status = BookStatus.None;
     }
 
     ionViewDidLoad() {
