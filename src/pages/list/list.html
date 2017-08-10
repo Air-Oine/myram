@@ -10,6 +10,7 @@
         </ion-buttons>
     </ion-navbar>
     <ion-toolbar>
+        <!--FILTER BOOKS LIST  -->
         <ion-searchbar 
             showCancelButton
             animated="true"
@@ -23,7 +24,7 @@
 <ion-content>
       
     <ion-list>
-        <button ion-item *ngFor="let item of books">
+        <button ion-item *ngFor="let item of datas.getFilteredBooks()">
         <!--TITLE  -->
         {{item.title}}
         <!--AUTHOR  -->

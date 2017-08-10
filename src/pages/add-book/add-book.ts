@@ -4,7 +4,9 @@ import * as lodash from 'lodash';
 
 import { Book, BookStatus } from '../../model/Book';
 import { Author } from '../../model/Author';
-import { StorageService, AUTHOR_KEY, BOOK_KEY } from '../../storage/storage.service';
+import { Collection } from '../../model/Collection';
+import { StorageService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from '../../storage/storage.service';
+import { DataService } from '../../storage/data.service';
 
 @IonicPage()
 @Injectable()
@@ -15,38 +17,65 @@ import { StorageService, AUTHOR_KEY, BOOK_KEY } from '../../storage/storage.serv
 export class AddBookPage {
     BookStatus = BookStatus;
     
-    book = new Book();
-    authors: Array<Author>;
-    authorsObservable: EventEmitter<{}>;
+    book: Book;
+
+    collectionSelected: boolean;
+    searchCollectionList: Array<Collection> = [];
 
     constructor(
         public navCtrl: NavController,
         public navParams: NavParams,
         public storageService: StorageService,
+        public datas: DataService,
         public alertCtrl: AlertController) {
-        
+
         //Default values
+        this.book = new Book();
         this.book.status = BookStatus.None;
+        this.book.collection = new Collection('');
+        this.collectionSelected = false;
     }
 
-    ionViewDidLoad() {
-        this.initStorage();
+    ionViewWillEnter() {
+        
+
+        //AUTHORS
+        this.datas.requireAuthors();
+
+        //COLLECTIONS
+        this.datas.requireCollections();
     }
 
     /**
-     * Initialize authors list observable, and refresh the list
+     * Show collections matching research
+     * @param event 
      */
-    private initStorage() {
-        this.authorsObservable = this.storageService.getListObservable(AUTHOR_KEY);
-        this.authorsObservable.subscribe(
-            value => this.authors = value,
-            error => console.log(error),
-            () => console.log('done')
-        );
+    searchCollection(event) {
+        this.collectionSelected = false;
 
-        this.storageService.loadList(AUTHOR_KEY);
+        let research = event.target.value;
+console.log(research)
+		if (research) {
+			research = research.trim().toLowerCase();
+
+			this.searchCollectionList = this.datas.getCollections().filter((item) => {
+				return item.name.toLowerCase().indexOf(research) > -1;
+			})
+		}
+		else {
+			this.searchCollectionList = [];
+		}
     }
 
+    selectExistingCollection(collection: Collection) {
+        this.collectionSelected = true;
+
+        this.book.collection = collection;
+    }
+
+    /**
+     * SHow popin for Author creation
+     */
     showAlertAddAuthor() {
         let prompt = this.alertCtrl.create({
             title: 'Add author',
@@ -90,6 +119,18 @@ export class AddBookPage {
     save(form) {
         console.log(JSON.stringify(this.book));
 
+        //New collection
+        if(!this.collectionSelected) {
+            //No user input
+            if(this.book.collection.name === '') {
+                this.book.collection = null;
+            }
+            //Save the new collection
+            else {
+                this.book.collection = this.storageService.addObject(COLLECTION_KEY, this.book.collection);
+                this.book.collectionId = this.book.collection.id;
+            }
+        }
         //Save the book
         this.storageService.addObject(BOOK_KEY, this.book);
 

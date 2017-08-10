@@ -32,7 +32,7 @@
                             i18n-cancelText="@@AddBook.select.author.cancel" cancelText="Cancel" 
                             i18n-okText="@@AddBook.select.author.ok" okText="OK">
 
-                            <ion-option *ngFor="let author of authors" 
+                            <ion-option *ngFor="let author of datas.getAuthors()" 
                                 [value]="author">{{author.firstName}} {{author.lastName}}</ion-option>
                         </ion-select>
                     </ion-item>
@@ -52,8 +52,16 @@
             <ion-label i18n="@@AddBook.label.collection">Collection</ion-label>
             <ion-input 
                 type="text"
-                name="collection" [(ngModel)]="book.collection"></ion-input>
+                name="collection" [(ngModel)]="book.collection.name"
+                (input)="searchCollection($event)"></ion-input>
         </ion-item>
+        <!--COLLECTIONS RESEARCH LIST  -->
+        <ion-list *ngIf="!collectionSelected">
+            <ion-item *ngFor="let collec of searchCollectionList"
+                (click)="selectExistingCollection(collec)">
+                <ion-label>{{collec.name}}</ion-label>
+            </ion-item>
+        </ion-list>
 
         <!--BOOK STATUS  -->
         <ion-segment name="status" [(ngModel)]="book.status">

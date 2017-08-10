@@ -6,6 +6,7 @@ const ID = 'ID';
 
 export const AUTHOR_KEY = 'author';
 export const BOOK_KEY = 'book';
+export const COLLECTION_KEY = 'collection';
 
 /**
  * Handle storage of objects
@@ -59,7 +60,7 @@ export class StorageService {
      * @param objectName 
      * @param forceReload : replace memory list by the one in DB
      */
-    loadList(objectName: string, forceReload: boolean = false) {
+    loadList(objectName: string, forceReload: boolean = false) : void {
         //List hasn't been loaded yet
         if(this.lists[objectName] === undefined || forceReload) {
             //Init list
@@ -106,7 +107,15 @@ export class StorageService {
             this.listObservable[objectName] = new EventEmitter();
         }
         return this.listObservable[objectName];
-    } 
+    }
+
+    /**
+     * Send the list (if the list is already in memory, but )
+     * @param objectName 
+     */
+    getList(objectName: string) {
+        this.refreshList(objectName);
+    }
 
     /**
      * WARNING : Clear all data stored by the app
@@ -119,6 +128,13 @@ export class StorageService {
      * TEST : Mock datas for testing purpose
      */
     mockDatas() {
+        //2 collections
+        let collection = {"name":"L'héritage"};
+        const heritage = this.addObject(COLLECTION_KEY, collection);
+
+        collection = {"name":"Label 619"};
+        const label619 = this.addObject(COLLECTION_KEY, collection);
+
         //2 authors
         let author = {"lastName":"Paolini","firstName":"Christopher"};
         const paolini = this.addObject(AUTHOR_KEY, author);
@@ -127,10 +143,20 @@ export class StorageService {
         const bablet = this.addObject(AUTHOR_KEY, author);
 
         //2 books
-        let book = {"title":"Eragon","author":paolini,"authorId":2,"collection":"L'héritage","gender":null,"status":0,"read":null};
+        let book = {
+            "title":"Eragon",
+            "author":paolini,"authorId":paolini.id,
+            "collection":heritage,"collectionId":heritage.id,
+            "gender":null,"status":0,"read":null};
+
         this.addObject(BOOK_KEY, book);
 
-        book = {"title":"Shangri-La","author":bablet,"authorId":3,"collection":"Label 619","gender":null,"status":0,"read":null};
+        book = {
+            "title":"Shangri-La",
+            "author":bablet,"authorId":bablet.id,
+            "collection":label619,"collectionId":label619.id,
+            "gender":null,"status":0,"read":null};
+
         this.addObject(BOOK_KEY, book);
     }
     

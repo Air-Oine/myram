@@ -8,6 +8,7 @@ import { ListPage } from '../pages/list/list';
 import { AddBookPage } from '../pages/add-book/add-book';
 
 import { StorageService } from '../storage/storage.service';
+import { DataService } from '../storage/data.service';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -33,6 +34,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     StatusBar,
     SplashScreen,
     StorageService,
+    DataService,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
   ]
 })
