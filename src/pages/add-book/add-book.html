@@ -40,7 +40,8 @@
                         <ion-input *ngIf="!authorSelected"
                             type="text"
                             name="author" [(ngModel)]="book.author"
-                            (input)="searchAuthor($event)"></ion-input>
+                            (input)="searchAuthor($event)"
+                            required></ion-input>
                         <ion-label *ngIf="authorSelected"
                             color="dark">
                             {{book.author.firstName}} {{book.author.lastName}}</ion-label>
@@ -125,7 +126,7 @@
         <button ion-button full
             type="submit" 
             (click)="save(form)"
-            [disabled]="form.invalid"
+            [disabled]="form.invalid || !authorSelected"
             i18n="@@AddBook.button.save">Save</button>
     </form>
 </ion-content>

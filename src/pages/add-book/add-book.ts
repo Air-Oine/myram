@@ -74,7 +74,7 @@ export class AddBookPage {
 
 		if (research && research.length > 2) {
 			research = research.trim().toLowerCase();
-console.log(this.datas.getCollections())
+
 			this.searchCollectionList = this.datas.getCollections().filter((item) => {
 				return item.name.toLowerCase().indexOf(research) > -1;
 			})
@@ -191,6 +191,14 @@ console.log(this.datas.getCollections())
 
         //Close the page
         this.navCtrl.pop();
+    }
+
+    /**
+     * Return true if the form is valid
+     * @param form 
+     */
+    checkFormValidity(form) {
+        return form.valid && this.authorSelected;
     }
 
     /**

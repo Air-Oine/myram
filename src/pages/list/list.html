@@ -26,7 +26,13 @@
         <div *ngFor="let booksFromCollection of datas.getFilteredBooks()">
             <!--LIST HEADER  -->
             <ion-list-header>
-                {{booksFromCollection[0].collection.name}}
+                <span *ngIf="booksFromCollection[0].collection">
+                    {{booksFromCollection[0].collection.name}}
+                </span>
+                <span *ngIf="!booksFromCollection[0].collection"
+                    i18n="@@List.label.noCollection">
+                    Others
+                </span>
             </ion-list-header>
 
             <!--LIST ITEM  -->
