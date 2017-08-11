@@ -25,12 +25,9 @@ export class StorageService {
     /**
      * Initialize the storage service for one table
      * @param objectName name of the table
-     * @param sortFields if you want a list of table elements
      */
-    init(objectName: string, sortFields: Array<string> = null) {
+    init(objectName: string) {
         this.getCurrentIdInDB(objectName);
-
-        this.setSortFields(objectName, sortFields);
     }
 
     /**

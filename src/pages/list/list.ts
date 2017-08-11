@@ -33,6 +33,7 @@ export class ListPage {
 		//this.storageService.clearStorage();
 
 		//Notice that we need books, and launch data recuperation
+		this.datas.setBooksSortFields(['collection.name', 'author.lastName', 'title']);
 		this.datas.requireBooks(GROUPBY_COLLECTION);
 	}
 
@@ -55,20 +56,6 @@ export class ListPage {
 	 */
 	cancelSearch() {
 		this.datas.cancelFilterBook();
-	}
-
-	/**
-	 * Return color depending of read status
-	 * @param book 
-	 */
-	getReadColor(book: Book) : string {
-		console.log(book)
-		if(book.read === true) {
-			return 'primary';
-		}
-		else {
-			return 'exist';
-		}
 	}
 
 	/**

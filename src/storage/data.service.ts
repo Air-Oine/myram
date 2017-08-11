@@ -7,7 +7,7 @@ import { Author } from '../model/Author';
 import { Book } from '../model/Book';
 import { Collection } from '../model/Collection';
 
-export const GROUPBY_COLLECTION = 'collection.id';
+export const GROUPBY_COLLECTION = 'collection.name';
 
 @Injectable()
 export class DataService {
@@ -37,7 +37,8 @@ export class DataService {
                 () => console.log('done')
             );
 
-            this.storageService.init(AUTHOR_KEY, ['lastName', 'firstName']);
+            this.setAuthorsSortFields(['lastName', 'firstName']);
+            this.storageService.init(AUTHOR_KEY);
             this.storageService.loadList(AUTHOR_KEY);
         }
     }
@@ -47,6 +48,14 @@ export class DataService {
      */
     getAuthors() : Array<Author> {
         return this.authors;
+    }
+
+    /**
+     * Set the order of the list of authors
+     * @param sortFields 
+     */
+    setAuthorsSortFields(sortFields: Array<string> = null) {
+        this.storageService.setSortFields(AUTHOR_KEY, sortFields);
     }
 
     //COLLECTION
@@ -63,7 +72,8 @@ export class DataService {
                 () => console.log('done')
             );
 
-            this.storageService.init(COLLECTION_KEY, ['name']);
+            this.setCollectionsSortFields(['name']);
+            this.storageService.init(COLLECTION_KEY);
             this.storageService.loadList(COLLECTION_KEY);
         }
     }
@@ -73,6 +83,14 @@ export class DataService {
      */
     getCollections() : Array<Collection> {
         return this.collections;
+    }
+
+    /**
+     * Set the order of the list of collections
+     * @param sortFields 
+     */
+    setCollectionsSortFields(sortFields: Array<string> = null) {
+        this.storageService.setSortFields(COLLECTION_KEY, sortFields);
     }
 
     //BOOK
@@ -90,7 +108,7 @@ export class DataService {
 		this.observables[BOOK_KEY].subscribe(
 			value => {
 				let booksList: Array<Book> = value;
-				//Get related table if not defined
+                
 				for(let book of booksList) {
 					//Get the author if not loaded yet
 					if(book.author === null) {
@@ -101,13 +119,12 @@ export class DataService {
 						book.collection = this.storageService.getElement(COLLECTION_KEY, book.collectionId);
 					}
                 }
-                
+                console.log(booksList)
                 //Group list
                 if(groupBy) {
                     this.books = lodash.values(lodash.groupBy(booksList, groupBy));
-                    //console.log(this.books)
                 }
-                
+                console.log(this.books)
 				//Shawn list
 				this.booksWithFilter = this.books;
 			},
@@ -132,6 +149,14 @@ export class DataService {
      */
     getFilteredBooks() : Array<Array<Book>> {
         return this.booksWithFilter;
+    }
+
+    /**
+     * Set the order of the list of books
+     * @param sortFields 
+     */
+    setBooksSortFields(sortFields: Array<string> = null) {
+        this.storageService.setSortFields(BOOK_KEY, sortFields);
     }
 
     /**

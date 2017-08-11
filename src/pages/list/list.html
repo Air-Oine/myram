@@ -41,7 +41,7 @@
                 <!--READ ICON  -->
                 <ion-icon
                     name="checkmark" 
-                    item-end [color]="getReadColor(item)"></ion-icon>
+                    item-end [color]="item.read === true ? 'primary' : 'exist'"></ion-icon>
             </button>
         </div>
     </ion-list>
