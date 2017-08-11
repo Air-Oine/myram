@@ -48,7 +48,9 @@ export class ListPage {
 	search(event) {
 		let research = event.target.value;
 
-		this.datas.filterBook(research);
+		if(research && research.length > 2) {
+			this.datas.filterBook(research);
+		}
 	}
 
 	/**

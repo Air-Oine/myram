@@ -37,19 +37,23 @@
                 <ion-col col-9>
                     <ion-item>
                         <ion-label i18n="@@AddBook.label.author">Author</ion-label>
-                        <ion-select 
-                            name="author" [(ngModel)]="book.author" 
-                            multiple="false" 
-                            required
-                            i18n-cancelText="@@AddBook.select.author.cancel" cancelText="Cancel" 
-                            i18n-okText="@@AddBook.select.author.ok" okText="OK">
-
-                            <ion-option *ngFor="let author of datas.getAuthors()" 
-                                [value]="author">{{author.firstName}} {{author.lastName}}</ion-option>
-                        </ion-select>
+                        <ion-input *ngIf="!authorSelected"
+                            type="text"
+                            name="author" [(ngModel)]="book.author"
+                            (input)="searchAuthor($event)"></ion-input>
+                        <ion-label *ngIf="authorSelected"
+                            color="dark">
+                            {{book.author.firstName}} {{book.author.lastName}}</ion-label>
                     </ion-item>
+                    <!--AUTHORS RESEARCH LIST  -->
+                    <ion-list *ngIf="!authorSelected">
+                        <ion-item *ngFor="let author of searchAuthorList"
+                            (click)="selectExistingAuthor(author)">
+                            <ion-label>{{author.firstName}} {{author.lastName}}</ion-label>
+                        </ion-item>
+                    </ion-list>
                 </ion-col>
-                <ion-col col-1>
+                <ion-col col-1 align-items-start>
                     <!--ADD AUTHOR  -->
                     <button ion-button icon-only item-end
                         (click)="showAlertAddAuthor()">

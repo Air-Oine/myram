@@ -23,6 +23,9 @@ export class AddBookPage {
     collectionSelected: boolean;
     searchCollectionList: Array<Collection> = [];
 
+    authorSelected: boolean;
+    searchAuthorList: Array<Author> = [];
+
     constructor(
         public navCtrl: NavController,
         public navParams: NavParams,
@@ -35,8 +38,11 @@ export class AddBookPage {
         //Update
         if(bookToModify) {
             this.creation = false;
-            console.log(bookToModify)
+
             this.book = bookToModify;
+
+            this.authorSelected = this.book.author ? true : false;
+            this.collectionSelected = this.book.collection ? true : false;
         }
         else {
             this.creation = true;
@@ -66,9 +72,9 @@ export class AddBookPage {
 
         let research = event.target.value;
 
-		if (research) {
+		if (research && research.length > 2) {
 			research = research.trim().toLowerCase();
-
+console.log(this.datas.getCollections())
 			this.searchCollectionList = this.datas.getCollections().filter((item) => {
 				return item.name.toLowerCase().indexOf(research) > -1;
 			})
@@ -85,7 +91,35 @@ export class AddBookPage {
     }
 
     /**
-     * SHow popin for Author creation
+     * Show authors matching research
+     * @param event 
+     */
+    searchAuthor(event) {
+        this.authorSelected = false;
+
+        let research = event.target.value;
+
+		if (research && research.length > 2) {
+			research = research.trim().toLowerCase();
+
+			this.searchAuthorList = this.datas.getAuthors().filter((item) => {
+                return item.firstName.toLowerCase().indexOf(research) > -1 ||
+                    item.lastName.toLowerCase().indexOf(research) > -1;
+			})
+		}
+		else {
+			this.searchAuthorList = [];
+		}
+    }
+
+    selectExistingAuthor(author: Author) {
+        this.authorSelected = true;
+
+        this.book.author = author;
+    }
+
+    /**
+     * Show popin for Author creation
      */
     showAlertAddAuthor() {
         let prompt = this.alertCtrl.create({
@@ -116,6 +150,8 @@ export class AddBookPage {
                             //Saving the author, and select him
                             this.book.author = this.storageService.addObject(AUTHOR_KEY, newAuthor);
                             this.book.authorId = this.book.author.id;
+
+                            this.authorSelected = true;
                         }
                     }
                 }
@@ -124,6 +160,9 @@ export class AddBookPage {
         prompt.present();
     }
 
+    /**
+     * Show a confirmation alert before deleting a book
+     */
     deleteBookAlert() {
         let confirm = this.alertCtrl.create({
             title: 'Confirm deletion',
@@ -149,7 +188,7 @@ export class AddBookPage {
 
     private deleteBook() {
         this.storageService.deleteObject(BOOK_KEY, this.book);
-        
+
         //Close the page
         this.navCtrl.pop();
     }
