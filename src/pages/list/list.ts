@@ -33,7 +33,7 @@ export class ListPage {
 		//this.storageService.clearStorage();
 
 		//Notice that we need books, and launch data recuperation
-		this.datas.setBooksSortFields(['collection.name', 'author.lastName', 'title']);
+		this.datas.setBooksSortFields(['collection.name', 'author.lastName', 'volume', 'title']);
 		this.datas.requireBooks(GROUPBY_COLLECTION);
 	}
 
@@ -63,5 +63,13 @@ export class ListPage {
 	 */
 	addItem() {
 		this.navCtrl.push(AddBookPage);
+	}
+
+	/**
+	 * Go to book creation page for modify a book
+	 * @param book
+	 */
+	modifyBook(book: Book) {
+		this.navCtrl.push(AddBookPage, {book});
 	}
 }

@@ -17,6 +17,7 @@ import { DataService } from '../../storage/data.service';
 export class AddBookPage {
     BookStatus = BookStatus;
     
+    creation: boolean;
     book: Book;
 
     collectionSelected: boolean;
@@ -29,11 +30,23 @@ export class AddBookPage {
         public datas: DataService,
         public alertCtrl: AlertController) {
 
-        //Default values
-        this.book = new Book();
-        this.book.status = BookStatus.None;
-        this.book.collection = new Collection('');
-        this.collectionSelected = false;
+        let bookToModify = navParams.get('book');
+
+        //Update
+        if(bookToModify) {
+            this.creation = false;
+            console.log(bookToModify)
+            this.book = bookToModify;
+        }
+        else {
+            this.creation = true;
+
+            //Default values
+            this.book = new Book();
+            this.book.status = BookStatus.None;
+            this.book.collection = new Collection('');
+            this.collectionSelected = false;
+        }
     }
 
     ionViewWillEnter() {
@@ -111,6 +124,36 @@ export class AddBookPage {
         prompt.present();
     }
 
+    deleteBookAlert() {
+        let confirm = this.alertCtrl.create({
+            title: 'Confirm deletion',
+            message: this.deleteText(),
+            buttons: [
+                {
+                    text: 'Cancel',
+                },
+                {
+                    text: 'Confirm',
+                    handler: () => {
+                        this.deleteBook();
+                    }
+                }
+            ]
+        });
+        confirm.present();
+    }
+
+    private deleteText() : string {
+        return 'Do you really want to delete ' + this.book.title + ' ?';
+    }
+
+    private deleteBook() {
+        this.storageService.deleteObject(BOOK_KEY, this.book);
+        
+        //Close the page
+        this.navCtrl.pop();
+    }
+
     /**
      * Create a new book, and save it
      */
@@ -127,9 +170,23 @@ export class AddBookPage {
                 this.book.collectionId = this.book.collection.id;
             }
         }
+        else {
+            this.book.collectionId = this.book.collection.id;
+        }
+
+        //Author ID
+        if(this.book.author) {
+            this.book.authorId = this.book.author.id;
+        }
+
         console.log(JSON.stringify(this.book));
         //Save the book
-        this.storageService.addObject(BOOK_KEY, this.book);
+        if(this.creation) {
+            this.storageService.addObject(BOOK_KEY, this.book);
+        }
+        else {
+            this.storageService.updateObject(BOOK_KEY, this.book);
+        }
 
         //Close the page
         this.navCtrl.pop();

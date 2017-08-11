@@ -30,8 +30,9 @@
             </ion-list-header>
 
             <!--LIST ITEM  -->
-            <button ion-item *ngFor="let item of booksFromCollection">
-                <!--TITLE  -->
+            <button ion-item *ngFor="let item of booksFromCollection"
+                (click)="modifyBook(item)">
+                <!--VOLUME NUMBER AND TITLE  -->
                 <span *ngIf="item.volume">{{item.volume}} - </span> {{item.title}}
                 <!--AUTHOR  -->
                 <p>{{item.author?.firstName}} {{item.author?.lastName}}</p>

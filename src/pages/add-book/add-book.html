@@ -1,9 +1,21 @@
 <ion-header>
     <ion-navbar>
         <button ion-button menuToggle>
-        <ion-icon name="menu"></ion-icon>
-    </button>
-        <ion-title>Add a book</ion-title>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+
+        <!--TITLE  -->
+        <ion-title *ngIf="creation"
+            i18n="@@AddBook.title.add">Add a book</ion-title>
+        <ion-title *ngIf="!creation"
+            i18n="@@AddBook.title.update">Update {{book.title}}</ion-title>
+        
+        <ion-buttons end>
+            <!--DELETE BUTTON  -->
+            <button *ngIf="!creation"
+                icon-only
+                (click)="deleteBookAlert()"><ion-icon name="trash"></ion-icon></button>
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
 

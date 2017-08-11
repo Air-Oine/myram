@@ -51,6 +51,40 @@ export class StorageService {
 
         return item;
     }
+
+    /**
+     * Update an object, in DB and memory
+     * @param objectName 
+     * @param item 
+     */
+    updateObject(objectName: string, item: any) : any {
+        //Update in DB
+        this.storage.set(objectName + item.id, item);
+
+        //Update in memory
+        var foundIndex = this.lists[objectName].findIndex(x => x.id == item.id);
+        this.lists[objectName][foundIndex] = item;
+
+        this.refreshList(objectName);
+
+        return item;
+    }
+
+    /**
+     * Delete an object, in DB and memory
+     * @param objectName 
+     * @param item 
+     */
+    deleteObject(objectName: string, item: any) : void {
+        //Delete in DB
+        this.storage.remove(objectName + item.id);
+
+        //Delete in memory
+        var foundIndex = this.lists[objectName].findIndex(x => x.id == item.id);
+        this.lists[objectName].splice(foundIndex, 1);
+
+        this.refreshList(objectName);
+    }
     
     /**
      * Load values in DB corresponding to the object name (if the list hasn't loaded yet)
