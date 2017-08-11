@@ -63,6 +63,15 @@
             </ion-item>
         </ion-list>
 
+        <!--VOLUME  -->
+        <ion-item *ngIf="book.collection.name !== ''">
+            <ion-label i18n="@@AddBook.label.volume">Volume</ion-label>
+            <ion-input 
+                type="number"
+                name="volume" [(ngModel)]="book.volume"
+                min=0></ion-input>
+        </ion-item>
+
         <!--BOOK STATUS  -->
         <ion-segment name="status" [(ngModel)]="book.status">
             <ion-segment-button [value]="BookStatus.Wanted"

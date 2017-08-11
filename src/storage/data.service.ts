@@ -119,13 +119,13 @@ export class DataService {
 						book.collection = this.storageService.getElement(COLLECTION_KEY, book.collectionId);
 					}
                 }
-                console.log(booksList)
+
                 //Group list
                 if(groupBy) {
                     this.books = lodash.values(lodash.groupBy(booksList, groupBy));
                 }
-                console.log(this.books)
-				//Shawn list
+
+                //Shawn list
 				this.booksWithFilter = this.books;
 			},
 			error => console.log(error),

@@ -15,7 +15,8 @@ export class Book {
         public type: string = null,
         public gender: string = null,
         public status: BookStatus = BookStatus.None,
-        public read: boolean = null) {
+        public read: boolean = null,
+        public volume: number = null) {
 
     }
 }

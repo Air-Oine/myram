@@ -32,7 +32,7 @@
             <!--LIST ITEM  -->
             <button ion-item *ngFor="let item of booksFromCollection">
                 <!--TITLE  -->
-                {{item.title}}
+                <span *ngIf="item.volume">{{item.volume}} - </span> {{item.title}}
                 <!--AUTHOR  -->
                 <p>{{item.author?.firstName}} {{item.author?.lastName}}</p>
                 <!--STATUS ICON  -->
