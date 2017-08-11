@@ -37,8 +37,6 @@ export class AddBookPage {
     }
 
     ionViewWillEnter() {
-        
-
         //AUTHORS
         this.datas.requireAuthors();
 
@@ -54,7 +52,7 @@ export class AddBookPage {
         this.collectionSelected = false;
 
         let research = event.target.value;
-console.log(research)
+
 		if (research) {
 			research = research.trim().toLowerCase();
 
@@ -117,8 +115,6 @@ console.log(research)
      * Create a new book, and save it
      */
     save(form) {
-        console.log(JSON.stringify(this.book));
-
         //New collection
         if(!this.collectionSelected) {
             //No user input
@@ -131,6 +127,7 @@ console.log(research)
                 this.book.collectionId = this.book.collection.id;
             }
         }
+        console.log(JSON.stringify(this.book));
         //Save the book
         this.storageService.addObject(BOOK_KEY, this.book);
 

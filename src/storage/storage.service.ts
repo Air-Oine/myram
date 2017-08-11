@@ -168,7 +168,7 @@ export class StorageService {
         //The key is not loaded yet
         if(this.key[objectName] === undefined) {
             this.storage
-                .get(objectName + ID)
+                .get(ID + objectName)
                 .then(value => {
                     if(value != null) {
                         this.key[objectName] = value;

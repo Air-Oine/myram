@@ -1,16 +1,19 @@
 import { Injectable, EventEmitter } from '@angular/core';
 
+import * as lodash from 'lodash';
+
 import { StorageService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from './storage.service';
 import { Author } from '../model/Author';
 import { Book } from '../model/Book';
 import { Collection } from '../model/Collection';
 
+export const GROUPBY_COLLECTION = 'collection.id';
 
 @Injectable()
 export class DataService {
 
-    private booksWithFilter: Array<Book> = null;
-    private books: Array<Book> = null;
+    private booksWithFilter: Array<Array<Book>> = null;
+    private books: Array<Array<Book>> = null;
     private authors: Array<Author> = null;
     private collections: Array<Collection> = null;
 
@@ -76,8 +79,9 @@ export class DataService {
 
     /**
      * Handle data recuperation in DB for table Book
+     * @param groupBy constant from DataService
      */
-    requireBooks() {
+    requireBooks(groupBy: string = null) {
         //Need authors and collections datas
         this.requireAuthors();
         this.requireCollections();
@@ -85,9 +89,9 @@ export class DataService {
 		this.observables[BOOK_KEY] = this.storageService.getListObservable(BOOK_KEY);
 		this.observables[BOOK_KEY].subscribe(
 			value => {
-				this.booksWithFilter = value;
+				let booksList: Array<Book> = value;
 				//Get related table if not defined
-				for(let book of this.booksWithFilter) {
+				for(let book of booksList) {
 					//Get the author if not loaded yet
 					if(book.author === null) {
 						book.author = this.storageService.getElement(AUTHOR_KEY, book.authorId);
@@ -96,31 +100,37 @@ export class DataService {
 					if(book.collection === null && book.collectionId) {
 						book.collection = this.storageService.getElement(COLLECTION_KEY, book.collectionId);
 					}
-				}
-
+                }
+                
+                //Group list
+                if(groupBy) {
+                    this.books = lodash.values(lodash.groupBy(booksList, groupBy));
+                    //console.log(this.books)
+                }
+                
 				//Shawn list
-				this.books = this.booksWithFilter;
+				this.booksWithFilter = this.books;
 			},
 			error => console.log(error),
 			() => console.log('done')
 		);
 
 		//Sort list by collection
-		this.storageService.init(BOOK_KEY, ['collection']);
+		this.storageService.init(BOOK_KEY);
 		this.storageService.loadList(BOOK_KEY);
     }
 
     /**
      * Return the list of books
      */
-    getBooks() : Array<Book> {
+    getBooks() : Array<Array<Book>> {
         return this.books;
     }
 
     /**
      * Return the list of filtered books (with filter)
      */
-    getFilteredBooks() : Array<Book> {
+    getFilteredBooks() : Array<Array<Book>> {
         return this.booksWithFilter;
     }
 
@@ -132,22 +142,32 @@ export class DataService {
         if (research) {
 			research = research.trim().toLowerCase();
 
-			this.booksWithFilter = this.books.filter((item) => {
-				const titleFound = item.title.toLowerCase().indexOf(research) > -1;
-				let collectionFound = false;
-				let authorFirstNameFound = false;
-				let authorLastNameFound = false;
+            this.booksWithFilter = [];
 
-				if(item.author) {
-					authorFirstNameFound = item.author.firstName.toLowerCase().indexOf(research) > -1;
-					authorLastNameFound = item.author.lastName.toLowerCase().indexOf(research) > -1;
-				}
-				if(item.collection) {
-					collectionFound = item.collection.name.toLowerCase().indexOf(research) > -1;
-				}
+            //Iteration over books groups
+            for(let booksGroup of this.books) {
+                const filteredBooks = booksGroup.filter((item) => {
+                    const titleFound = item.title.toLowerCase().indexOf(research) > -1;
+                    let collectionFound = false;
+                    let authorFirstNameFound = false;
+                    let authorLastNameFound = false;
 
-				return titleFound || collectionFound || authorFirstNameFound || authorLastNameFound;
-			})
+                    if(item.author) {
+                        authorFirstNameFound = item.author.firstName.toLowerCase().indexOf(research) > -1;
+                        authorLastNameFound = item.author.lastName.toLowerCase().indexOf(research) > -1;
+                    }
+                    if(item.collection) {
+                        collectionFound = item.collection.name.toLowerCase().indexOf(research) > -1;
+                    }
+
+                    return titleFound || collectionFound || authorFirstNameFound || authorLastNameFound;
+                });
+
+                //At least one result
+                if(filteredBooks.length > 0) {
+                    this.booksWithFilter.push(filteredBooks);
+                }
+            }
 		}
 		else {
 			this.cancelFilterBook();

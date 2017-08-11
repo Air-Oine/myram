@@ -22,21 +22,28 @@
 </ion-header>
 
 <ion-content>
-      
     <ion-list>
-        <button ion-item *ngFor="let item of datas.getFilteredBooks()">
-        <!--TITLE  -->
-        {{item.title}}
-        <!--AUTHOR  -->
-        <p>{{item.author?.firstName}} {{item.author?.lastName}}</p>
-        <!--STATUS ICON  -->
-        <ion-icon *ngIf="item.status === BookStatus.Owned" name="book" item-end></ion-icon>
-        <ion-icon *ngIf="item.status === BookStatus.Wanted" name="search" item-end></ion-icon>
-        <!--READ ICON  -->
-        <ion-icon
-            name="checkmark" 
-            item-end [color]="item.read ? 'primary' : 'exist'"></ion-icon>
-        </button>
+        <div *ngFor="let booksFromCollection of datas.getFilteredBooks()">
+            <!--LIST HEADER  -->
+            <ion-list-header>
+                {{booksFromCollection[0].collection.name}}
+            </ion-list-header>
+
+            <!--LIST ITEM  -->
+            <button ion-item *ngFor="let item of booksFromCollection">
+                <!--TITLE  -->
+                {{item.title}}
+                <!--AUTHOR  -->
+                <p>{{item.author?.firstName}} {{item.author?.lastName}}</p>
+                <!--STATUS ICON  -->
+                <ion-icon *ngIf="item.status === BookStatus.Owned" name="book" item-end></ion-icon>
+                <ion-icon *ngIf="item.status === BookStatus.Wanted" name="search" item-end></ion-icon>
+                <!--READ ICON  -->
+                <ion-icon
+                    name="checkmark" 
+                    item-end [color]="getReadColor(item)"></ion-icon>
+            </button>
+        </div>
     </ion-list>
 
     <!--NEW ITEM BUTTON  -->

@@ -82,6 +82,20 @@
             </ion-segment-button>
         </ion-segment>
         
+        <!--READ STATUS  -->
+        <ion-segment name="read" [(ngModel)]="book.read">
+            <ion-segment-button [value]="true"
+                i18n="@AddBook.label.read.read">
+                <ion-icon name="checkmark"></ion-icon>
+                Read
+            </ion-segment-button>
+            <ion-segment-button [value]="false"
+                i18n="@AddBook.label.read.unread">
+                <ion-icon name="close"></ion-icon>
+                Unread
+            </ion-segment-button>
+        </ion-segment>
+
         <!--SUBMIT  -->
         <button ion-button full
             type="submit" 

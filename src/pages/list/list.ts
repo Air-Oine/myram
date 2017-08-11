@@ -6,7 +6,7 @@ import { Book, BookStatus } from '../../model/Book';
 import { Author } from '../../model/Author';
 
 import { StorageService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from '../../storage/storage.service';
-import { DataService } from '../../storage/data.service';
+import { DataService, GROUPBY_COLLECTION } from '../../storage/data.service';
 
 import { AddBookPage } from '../add-book/add-book';
 
@@ -20,6 +20,8 @@ export class ListPage {
 	selectedItem: any;
 	booksFilterable: Array<Book>;
 
+	lastBookCollectionId: number;
+
 	constructor(
 		public navCtrl: NavController, 
 		public navParams: NavParams, 
@@ -31,7 +33,7 @@ export class ListPage {
 		//this.storageService.clearStorage();
 
 		//Notice that we need books, and launch data recuperation
-		this.datas.requireBooks();
+		this.datas.requireBooks(GROUPBY_COLLECTION);
 	}
 
 	mock() {
@@ -53,6 +55,20 @@ export class ListPage {
 	 */
 	cancelSearch() {
 		this.datas.cancelFilterBook();
+	}
+
+	/**
+	 * Return color depending of read status
+	 * @param book 
+	 */
+	getReadColor(book: Book) : string {
+		console.log(book)
+		if(book.read === true) {
+			return 'primary';
+		}
+		else {
+			return 'exist';
+		}
 	}
 
 	/**
