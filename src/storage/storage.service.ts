@@ -4,10 +4,6 @@ import * as lodash from 'lodash';
 
 const ID = 'ID';
 
-export const AUTHOR_KEY = 'author';
-export const BOOK_KEY = 'book';
-export const COLLECTION_KEY = 'collection';
-
 /**
  * Handle storage of objects
  */
@@ -46,8 +42,10 @@ export class StorageService {
         this.storage.set(ID + objectName, this.key[objectName]);
 
         //Add in list in memory, and send it
-        this.lists[objectName].push(item);
-        this.refreshList(objectName);
+        if(this.listLoaded(objectName)) {
+            this.lists[objectName].push(item);
+            this.refreshList(objectName);
+        }
 
         return item;
     }
@@ -62,12 +60,31 @@ export class StorageService {
         this.storage.set(objectName + item.id, item);
 
         //Update in memory
-        var foundIndex = this.lists[objectName].findIndex(x => x.id == item.id);
-        this.lists[objectName][foundIndex] = item;
+        if(this.listLoaded(objectName)) {
+            var foundIndex = this.lists[objectName].findIndex(x => x.id == item.id);
+            this.lists[objectName][foundIndex] = item;
 
-        this.refreshList(objectName);
-
+            this.refreshList(objectName);
+        }
         return item;
+    }
+
+    /**
+     * Delete an object, in DB and memory
+     * @param objectName 
+     * @param id of item to delete
+     */
+    deleteObjectById(objectName: string, id: number) : void {
+        //Delete in DB
+        this.storage.remove(objectName + id);
+
+        //Delete in memory
+        if(this.listLoaded(objectName)) {
+            var foundIndex = this.lists[objectName].findIndex(x => x.id == id);
+            this.lists[objectName].splice(foundIndex, 1);
+
+            this.refreshList(objectName);
+        }
     }
 
     /**
@@ -76,14 +93,7 @@ export class StorageService {
      * @param item 
      */
     deleteObject(objectName: string, item: any) : void {
-        //Delete in DB
-        this.storage.remove(objectName + item.id);
-
-        //Delete in memory
-        var foundIndex = this.lists[objectName].findIndex(x => x.id == item.id);
-        this.lists[objectName].splice(foundIndex, 1);
-
-        this.refreshList(objectName);
+        this.deleteObjectById(objectName, item.id);
     }
     
     /**
@@ -93,7 +103,7 @@ export class StorageService {
      */
     loadList(objectName: string, forceReload: boolean = false) : void {
         //List hasn't been loaded yet
-        if(this.lists[objectName] === undefined || forceReload) {
+        if(this.lists[objectName] == undefined || forceReload) {
             //Init list
             this.lists[objectName] = [];
 
@@ -117,7 +127,22 @@ export class StorageService {
      * @param id 
      */
     getElement(objectName: string, id: number) {
-        return lodash.find(this.lists[objectName], ['id', id]);
+        //List hasn't been loaded yet
+        if(this.lists[objectName] == undefined) {
+            let observable = this.getListObservable(objectName);
+            observable.subscribe(
+                value => {
+                    observable.unsuscribe();
+                    return lodash.find(value, ['id', id]);
+                },
+                error => console.log(error),
+                () => console.log('done')
+            );
+        }
+        //Already loaded
+        else {
+            return lodash.find(this.lists[objectName], ['id', id]);
+        }
     }
 
     /**
@@ -141,6 +166,14 @@ export class StorageService {
     }
 
     /**
+     * Return true if the wanted list is loaded in memory
+     * @param objectName 
+     */
+    listLoaded(objectName: string) : boolean {
+        return !lodash.isEmpty(this.lists[objectName]);
+    }
+
+    /**
      * Send the list (if the list is already in memory, but )
      * @param objectName 
      */
@@ -158,7 +191,7 @@ export class StorageService {
     /**
      * TEST : Mock datas for testing purpose
      */
-    mockDatas() {
+    /*mockDatas() {
         //2 collections
         let collection = {"name":"L'héritage"};
         const heritage = this.addObject(COLLECTION_KEY, collection);
@@ -189,7 +222,7 @@ export class StorageService {
             "gender":null,"status":0,"read":null};
 
         this.addObject(BOOK_KEY, book);
-    }
+    }*/
     
     /**
      * Get increment ID for the object

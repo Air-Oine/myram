@@ -5,10 +5,12 @@ import * as lodash from 'lodash';
 import { Book, BookStatus } from '../../model/Book';
 import { Author } from '../../model/Author';
 
-import { StorageService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from '../../storage/storage.service';
-import { DataService, GROUPBY_COLLECTION } from '../../storage/data.service';
+import { UiTools } from '../../ui.tools';
+import { StorageService } from '../../storage/storage.service';
+import { DataService, BOOK_KEY, LOAN_KEY, GROUPBY_COLLECTION } from '../../storage/data.service';
 
 import { AddBookPage } from '../add-book/add-book';
+import { LendPage } from '../lend/lend';
 
 @Component({
 	selector: 'page-list',
@@ -26,7 +28,8 @@ export class ListPage {
 		public navCtrl: NavController, 
 		public navParams: NavParams, 
 		public storageService: StorageService,
-		public datas: DataService) {
+		public datas: DataService,
+		public uiTools: UiTools) {
 	}
 
 	ionViewDidLoad() {
@@ -38,7 +41,7 @@ export class ListPage {
 	}
 
 	mock() {
-		this.storageService.mockDatas();
+		//this.storageService.mockDatas();
 	}
 
 	/**
@@ -73,5 +76,29 @@ export class ListPage {
 	 */
 	modifyBook(book: Book) {
 		this.navCtrl.push(AddBookPage, {book});
+	}
+
+	/**
+	 * Go to lend page
+	 * @param book 
+	 */
+	lendBook(book: Book) {
+		this.navCtrl.push(LendPage, {book});
+	}
+
+	/**
+	 * Return the borrowed book
+	 * @param book 
+	 */
+	returnBook(book: Book) {
+		//Delete loan
+		this.storageService.deleteObjectById(LOAN_KEY, book.loanId);
+
+		//Update reference in book
+		book.loanId = null;
+		this.storageService.updateObject(BOOK_KEY, book);
+
+		//Show info
+		this.uiTools.toast(book.title + ' has been returned');
 	}
 }

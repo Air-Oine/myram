@@ -5,8 +5,8 @@ import * as lodash from 'lodash';
 import { Book, BookStatus } from '../../model/Book';
 import { Author } from '../../model/Author';
 import { Collection } from '../../model/Collection';
-import { StorageService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from '../../storage/storage.service';
-import { DataService } from '../../storage/data.service';
+import { StorageService } from '../../storage/storage.service';
+import { DataService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from '../../storage/data.service';
 
 @IonicPage()
 @Injectable()
@@ -33,7 +33,7 @@ export class AddBookPage {
         public datas: DataService,
         public alertCtrl: AlertController) {
 
-        let bookToModify = navParams.get('book');
+        let bookToModify = navParams.get(BOOK_KEY);
 
         //Update
         if(bookToModify) {
@@ -191,14 +191,6 @@ export class AddBookPage {
 
         //Close the page
         this.navCtrl.pop();
-    }
-
-    /**
-     * Return true if the form is valid
-     * @param form 
-     */
-    checkFormValidity(form) {
-        return form.valid && this.authorSelected;
     }
 
     /**

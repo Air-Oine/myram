@@ -2,12 +2,20 @@ import { Injectable, EventEmitter } from '@angular/core';
 
 import * as lodash from 'lodash';
 
-import { StorageService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from './storage.service';
+import { StorageService } from './storage.service';
 import { Author } from '../model/Author';
+import { Friend } from '../model/Friend';
 import { Book } from '../model/Book';
 import { Collection } from '../model/Collection';
+import { Loan } from '../model/Loan';
 
 export const GROUPBY_COLLECTION = 'collection.name';
+
+export const AUTHOR_KEY = 'author';
+export const BOOK_KEY = 'book';
+export const COLLECTION_KEY = 'collection';
+export const FRIEND_KEY = 'friend';
+export const LOAN_KEY = 'loan';
 
 @Injectable()
 export class DataService {
@@ -15,7 +23,9 @@ export class DataService {
     private booksWithFilter: Array<Array<Book>> = null;
     private books: Array<Array<Book>> = null;
     private authors: Array<Author> = null;
+    private friends: Array<Friend> = null;
     private collections: Array<Collection> = null;
+    private loans: Array<Loan> = null;
 
     private observables: Array<EventEmitter<{}>> = Array<EventEmitter<any>>();
 
@@ -56,6 +66,80 @@ export class DataService {
      */
     setAuthorsSortFields(sortFields: Array<string> = null) {
         this.storageService.setSortFields(AUTHOR_KEY, sortFields);
+    }
+
+    //FRIEND
+
+    /**
+     * Handle data recuperation in DB for table Friend
+     */
+    requireFriends() {
+        if(this.friends == null) {
+            this.observables[FRIEND_KEY] = this.storageService.getListObservable(FRIEND_KEY);
+            this.observables[FRIEND_KEY].subscribe(
+                value => this.friends = value,
+                error => console.log(error),
+                () => console.log('done')
+            );
+
+            this.setFriendsSortFields(['lastName', 'firstName']);
+            this.storageService.init(FRIEND_KEY);
+            this.storageService.loadList(FRIEND_KEY);
+        }
+    }
+
+    addFriend(friend: Friend) : Friend {
+        return this.storageService.addObject(FRIEND_KEY, friend);
+    }
+
+    /**
+     * Return the list of friends
+     */
+    getFriends() : Array<Friend> {
+        return this.friends;
+    }
+
+    /**
+     * Set the order of the list of friends
+     * @param sortFields 
+     */
+    setFriendsSortFields(sortFields: Array<string> = null) {
+        this.storageService.setSortFields(FRIEND_KEY, sortFields);
+    }
+
+    //LOAN
+
+    /**
+     * Handle data recuperation in DB for table Loan
+     */
+    requireLoans() {
+        if(this.loans == null) {
+            this.observables[LOAN_KEY] = this.storageService.getListObservable(LOAN_KEY);
+            this.observables[LOAN_KEY].subscribe(
+                value => this.loans = value,
+                error => console.log(error),
+                () => console.log('done')
+            );
+
+            this.setAuthorsSortFields(['date']);
+            this.storageService.init(LOAN_KEY);
+            this.storageService.loadList(LOAN_KEY);
+        }
+    }
+
+    /**
+     * Return the list of loans
+     */
+    getLoans() : Array<Loan> {
+        return this.loans;
+    }
+
+    /**
+     * Set the order of the list of loans
+     * @param sortFields 
+     */
+    setLoansSortFields(sortFields: Array<string> = null) {
+        this.storageService.setSortFields(LOAN_KEY, sortFields);
     }
 
     //COLLECTION

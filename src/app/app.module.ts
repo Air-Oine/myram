@@ -6,7 +6,9 @@ import { IonicStorageModule } from '@ionic/storage';
 import { MyApp } from './app.component';
 import { ListPage } from '../pages/list/list';
 import { AddBookPage } from '../pages/add-book/add-book';
+import { LendPage } from '../pages/lend/lend';
 
+import { UiTools } from '../ui.tools';
 import { StorageService } from '../storage/storage.service';
 import { DataService } from '../storage/data.service';
 
@@ -17,7 +19,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   declarations: [
     MyApp,
     ListPage,
-    AddBookPage
+    AddBookPage,
+    LendPage
   ],
   imports: [
     BrowserModule,
@@ -28,11 +31,13 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   entryComponents: [
     MyApp,
     ListPage,
-    AddBookPage
+    AddBookPage,
+    LendPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
+    UiTools,
     StorageService,
     DataService,
     {provide: ErrorHandler, useClass: IonicErrorHandler},

@@ -3,7 +3,7 @@
         <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>Books</ion-title>
+        <ion-title i18n="@List.title">Books</ion-title>
         <ion-buttons end>
             <!--TEMPORARY BUTTON  -->
             <button (click)="mock()"><ion-icon name="refresh"></ion-icon></button>
@@ -36,20 +36,44 @@
             </ion-list-header>
 
             <!--LIST ITEM  -->
-            <button ion-item *ngFor="let item of booksFromCollection"
-                (click)="modifyBook(item)">
-                <!--VOLUME NUMBER AND TITLE  -->
-                <span *ngIf="item.volume">{{item.volume}} - </span> {{item.title}}
-                <!--AUTHOR  -->
-                <p>{{item.author?.firstName}} {{item.author?.lastName}}</p>
-                <!--STATUS ICON  -->
-                <ion-icon *ngIf="item.status === BookStatus.Owned" name="book" item-end></ion-icon>
-                <ion-icon *ngIf="item.status === BookStatus.Wanted" name="search" item-end></ion-icon>
-                <!--READ ICON  -->
-                <ion-icon
-                    name="checkmark" 
-                    item-end [color]="item.read === true ? 'primary' : 'exist'"></ion-icon>
-            </button>
+            <ion-item-sliding *ngFor="let item of booksFromCollection">
+                <button ion-item 
+                    (click)="modifyBook(item)">
+                    <!--VOLUME NUMBER AND TITLE  -->
+                    <span *ngIf="item.volume">{{item.volume}} - </span> {{item.title}}
+                    <!--AUTHOR  -->
+                    <p>{{item.author?.firstName}} {{item.author?.lastName}}</p>
+                    <!--STATUS ICON  -->
+                    <ion-icon *ngIf="item.status === BookStatus.Owned" name="book" item-end></ion-icon>
+                    <ion-icon *ngIf="item.status === BookStatus.Wanted" name="search" item-end></ion-icon>
+                    <!--READ ICON  -->
+                    <ion-icon
+                        name="checkmark" 
+                        item-end [color]="item.read === true ? 'primary' : 'exist'"></ion-icon>
+                </button>
+                <ion-item-options side="right">
+                    <!--LOAN  -->
+                    <button ion-button color="primary"
+                        *ngIf="item.loanId != null"
+                        (click)="returnBook(item)">
+                        <ion-icon name="return"></ion-icon>
+                        <span i18n="@List.button.return"> Return </span>
+                    </button>
+                    <button ion-button color="primary"
+                        (click)="lendBook(item)"
+                        [disabled]="item.status !== BookStatus.Owned">
+
+                        <ion-icon *ngIf="item.loanId == null" name="share"></ion-icon>
+                        <ion-icon *ngIf="item.loanId != null" name="eye"></ion-icon>
+                        <span i18n="@List.button.loan"> Loan </span>
+                    </button>
+                    <!--DELETE  -->
+                    <button ion-button color="danger">
+                        <ion-icon name="trash"></ion-icon>
+                        <span i18n="@List.button.delete"> Delete </span>
+                    </button>
+                </ion-item-options>
+            </ion-item-sliding>
         </div>
     </ion-list>
 

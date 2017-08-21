@@ -1,0 +1,61 @@
+<ion-header>
+	<ion-navbar>
+		<button ion-button menuToggle>
+			<ion-icon name="menu"></ion-icon>
+		</button>
+		<ion-title i18n="@Lend.title">Loan a book</ion-title>
+	</ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+    <form #form="ngForm">
+
+        <!--FRIEND  -->
+        <ion-grid no-padding>
+            <ion-row justify-content-between>
+                <ion-col col-9>
+                    <ion-item>
+                        <ion-label i18n="@@Lend.label.lendTo">Lend to</ion-label>
+                        <ion-input *ngIf="!friendSelected"
+                            type="text"
+                            name="friend" [(ngModel)]="loan.friend"
+                            (input)="searchFriend($event)"
+                            required></ion-input>
+                        <ion-label *ngIf="friendSelected"
+                            color="dark">
+                            {{loan.friend.firstName}} {{loan.friend.lastName}}</ion-label>
+                    </ion-item>
+                    <!--FRIENDS RESEARCH LIST  -->
+                    <ion-list *ngIf="!friendSelected">
+                        <ion-item *ngFor="let friend of searchFriendList"
+                            (click)="selectExistingFriend(friend)">
+                            <ion-label>{{friend.firstName}} {{friend.lastName}}</ion-label>
+                        </ion-item>
+                    </ion-list>
+                </ion-col>
+                <ion-col col-auto>
+                    <!--ADD FRIEND  -->
+                    <button ion-button icon-only item-end
+                        (click)="showAlertAddFriend()">
+                        <ion-icon name="add"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <!--LEND DATE  -->
+        <ion-item>
+            <ion-label i18n="@@Lend.label.date">Lend date</ion-label>
+            <ion-datetime displayFormat="DD/MM/YYYY" 
+                name="dateLend" [(ngModel)]="loan.date"></ion-datetime>
+        </ion-item>
+
+        <!--SUBMIT  -->
+        <button ion-button full
+            type="submit" 
+            (click)="save(form)"
+            [disabled]="form.invalid || !friendSelected"
+            i18n="@@Lend.button.save">Save</button>
+    </form>
+</ion-content>
