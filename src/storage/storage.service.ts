@@ -13,6 +13,7 @@ export class StorageService {
     private listObservable = Array<EventEmitter<any>>();
     private lists: Array<Array<any>> = [];
     private sortFields: Array<Array<string>> = [];
+    private listsLoaded: Array<boolean> = [];
 
     constructor(private storage: Storage) { 
         
@@ -105,6 +106,7 @@ export class StorageService {
         //List hasn't been loaded yet
         if(this.lists[objectName] == undefined || forceReload) {
             //Init list
+            this.listsLoaded[objectName] = false;
             this.lists[objectName] = [];
 
             this.storage.forEach((value, key, iterationNumber) => {
@@ -112,6 +114,7 @@ export class StorageService {
                     this.lists[objectName].push(value);
                 }
             }).then(() => {
+                this.listsLoaded[objectName] = true;
                 this.refreshList(objectName);
             });
         }
@@ -170,7 +173,7 @@ export class StorageService {
      * @param objectName 
      */
     listLoaded(objectName: string) : boolean {
-        return !lodash.isEmpty(this.lists[objectName]);
+        return this.listsLoaded[objectName];
     }
 
     /**
@@ -186,6 +189,16 @@ export class StorageService {
      */
     clearStorage() {
         this.storage.clear();
+    }
+
+    /**
+     * DEVELOPPEMENT
+     * Show all databases datas in console
+     */
+    exportInConsoleData() {
+        this.storage.forEach((value, key, iterationNumber) => {
+            console.log(key + ': ' + value)
+        });
     }
 
     /**

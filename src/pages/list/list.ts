@@ -40,10 +40,6 @@ export class ListPage {
 		this.datas.requireBooks(GROUPBY_COLLECTION);
 	}
 
-	mock() {
-		//this.storageService.mockDatas();
-	}
-
 	/**
 	 * Filter books list on some criteria : title, author and collection
 	 * @param event 

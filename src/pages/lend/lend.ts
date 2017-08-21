@@ -8,6 +8,7 @@ import { Loan } from '../../model/Loan';
 
 import { StorageService } from '../../storage/storage.service';
 import { DataService, LOAN_KEY, BOOK_KEY, FRIEND_KEY } from '../../storage/data.service';
+import { UiTools } from '../../ui.tools';
 
 @IonicPage()
 @Component({
@@ -29,7 +30,8 @@ export class LendPage {
         public datas: DataService,
         public storageService: StorageService,
         public alertCtrl: AlertController,
-        public loadingCtrl: LoadingController) {
+        public loadingCtrl: LoadingController,
+        public uiTools: UiTools) {
 
         this.loan = new Loan();
 
@@ -182,9 +184,13 @@ export class LendPage {
             //Update loan ID of the book
             this.book.loanId = this.loan.id;
             this.storageService.updateObject(BOOK_KEY, this.book);
+
+            this.uiTools.toast(this.loan.friend.firstName + ' has borrowed ' + this.book.title);
         }
         else {
             this.storageService.updateObject(LOAN_KEY, this.loan);
+
+            this.uiTools.toast('The loan made to ' + this.loan.friend.firstName + ' has been updated');
         }
 
         //Close the page

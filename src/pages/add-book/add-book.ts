@@ -5,8 +5,10 @@ import * as lodash from 'lodash';
 import { Book, BookStatus } from '../../model/Book';
 import { Author } from '../../model/Author';
 import { Collection } from '../../model/Collection';
+
 import { StorageService } from '../../storage/storage.service';
 import { DataService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from '../../storage/data.service';
+import { UiTools } from '../../ui.tools';
 
 @IonicPage()
 @Injectable()
@@ -31,7 +33,8 @@ export class AddBookPage {
         public navParams: NavParams,
         public storageService: StorageService,
         public datas: DataService,
-        public alertCtrl: AlertController) {
+        public alertCtrl: AlertController,
+        public uiTools: UiTools) {
 
         let bookToModify = navParams.get(BOOK_KEY);
 
@@ -222,9 +225,13 @@ export class AddBookPage {
         //Save the book
         if(this.creation) {
             this.storageService.addObject(BOOK_KEY, this.book);
+
+            this.uiTools.toast(this.book.title + ' has been added');
         }
         else {
             this.storageService.updateObject(BOOK_KEY, this.book);
+
+            this.uiTools.toast(this.book.title + ' has been updated');
         }
 
         //Close the page
