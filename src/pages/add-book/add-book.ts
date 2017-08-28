@@ -6,8 +6,10 @@ import { Book, BookStatus } from '../../model/Book';
 import { Author } from '../../model/Author';
 import { Collection } from '../../model/Collection';
 
-import { StorageService } from '../../storage/storage.service';
-import { DataService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from '../../storage/data.service';
+import { BooksService, BOOK_KEY } from '../../storage/books.service';
+import { AuthorsService } from '../../storage/authors.service';
+import { CollectionsService } from '../../storage/collections.service';
+
 import { UiTools } from '../../ui.tools';
 
 @IonicPage()
@@ -31,8 +33,9 @@ export class AddBookPage {
     constructor(
         public navCtrl: NavController,
         public navParams: NavParams,
-        public storageService: StorageService,
-        public datas: DataService,
+        public booksService: BooksService,
+        public authorsService: AuthorsService,
+        public collectionsService: CollectionsService,
         public alertCtrl: AlertController,
         public uiTools: UiTools) {
 
@@ -58,12 +61,10 @@ export class AddBookPage {
         }
     }
 
-    ionViewWillEnter() {
-        //AUTHORS
-        this.datas.requireAuthors();
+    ionViewWillLoad() {
+        this.authorsService.require();
 
-        //COLLECTIONS
-        this.datas.requireCollections();
+        this.collectionsService.require();
     }
 
     /**
@@ -78,7 +79,7 @@ export class AddBookPage {
 		if (research && research.length > 2) {
 			research = research.trim().toLowerCase();
 
-			this.searchCollectionList = this.datas.getCollections().filter((item) => {
+			this.searchCollectionList = this.collectionsService.getList().filter((item) => {
 				return item.name.toLowerCase().indexOf(research) > -1;
 			})
 		}
@@ -105,7 +106,7 @@ export class AddBookPage {
 		if (research && research.length > 2) {
 			research = research.trim().toLowerCase();
 
-			this.searchAuthorList = this.datas.getAuthors().filter((item) => {
+			this.searchAuthorList = this.authorsService.getList().filter((item) => {
                 return item.firstName.toLowerCase().indexOf(research) > -1 ||
                     item.lastName.toLowerCase().indexOf(research) > -1;
 			})
@@ -151,7 +152,7 @@ export class AddBookPage {
                             const newAuthor = new Author(lastName, firstName);
 
                             //Saving the author, and select him
-                            this.book.author = this.storageService.addObject(AUTHOR_KEY, newAuthor);
+                            this.book.author = this.authorsService.add(newAuthor);
                             this.book.authorId = this.book.author.id;
 
                             this.authorSelected = true;
@@ -190,7 +191,7 @@ export class AddBookPage {
     }
 
     private deleteBook() {
-        this.storageService.deleteObject(BOOK_KEY, this.book);
+        this.booksService.delete(this.book.id);
 
         //Close the page
         this.navCtrl.pop();
@@ -208,7 +209,7 @@ export class AddBookPage {
             }
             //Save the new collection
             else {
-                this.book.collection = this.storageService.addObject(COLLECTION_KEY, this.book.collection);
+                this.book.collection = this.collectionsService.add(this.book.collection);
                 this.book.collectionId = this.book.collection.id;
             }
         }
@@ -224,12 +225,12 @@ export class AddBookPage {
         console.log(JSON.stringify(this.book));
         //Save the book
         if(this.creation) {
-            this.storageService.addObject(BOOK_KEY, this.book);
+            this.booksService.add(this.book);
 
             this.uiTools.toast(this.book.title + ' has been added');
         }
         else {
-            this.storageService.updateObject(BOOK_KEY, this.book);
+            this.booksService.update(this.book);
 
             this.uiTools.toast(this.book.title + ' has been updated');
         }

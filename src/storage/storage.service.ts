@@ -1,8 +1,11 @@
 import { Storage } from '@ionic/storage';
 import { Injectable, EventEmitter } from '@angular/core';
+
 import * as lodash from 'lodash';
 
 const ID = 'ID';
+
+enum DataStatus {NoQuery, Loading, Loaded};
 
 /**
  * Handle storage of objects
@@ -13,7 +16,7 @@ export class StorageService {
     private listObservable = Array<EventEmitter<any>>();
     private lists: Array<Array<any>> = [];
     private sortFields: Array<Array<string>> = [];
-    private listsLoaded: Array<boolean> = [];
+    private listsLoaded: Array<DataStatus> = [];
 
     constructor(private storage: Storage) { 
         
@@ -21,31 +24,33 @@ export class StorageService {
 
     /**
      * Initialize the storage service for one table
-     * @param objectName name of the table
+     * @param tableName name of the table
      */
-    init(objectName: string) {
-        this.getCurrentIdInDB(objectName);
+    init(tableName: string) {
+        this.getCurrentIdInDB(tableName);
     }
 
     /**
      * Store an object, and add it to the list
      * Refresh the list
-     * @param objectName 
+     * @param tableName 
      * @param item 
      */
-    addObject(objectName: string, item: any) : any {
-        //Store in DB
-        this.key[objectName]++;
-        item.id = this.key[objectName];
-        this.storage.set(objectName + this.key[objectName], item);
+    addObject(tableName: string, item: any) : any {
+        //Increment the key
+        this.key[tableName]++;
+        item.id = this.key[tableName];
+
+        //Store the object
+        this.storage.set(tableName + this.key[tableName], item);
 
         //Save the current key
-        this.storage.set(ID + objectName, this.key[objectName]);
+        this.storage.set(ID + tableName, this.key[tableName]);
 
         //Add in list in memory, and send it
-        if(this.listLoaded(objectName)) {
-            this.lists[objectName].push(item);
-            this.refreshList(objectName);
+        if(this.listLoaded(tableName)) {
+            this.lists[tableName].push(item);
+            this.refreshList(tableName);
         }
 
         return item;
@@ -53,99 +58,106 @@ export class StorageService {
 
     /**
      * Update an object, in DB and memory
-     * @param objectName 
+     * @param tableName 
      * @param item 
      */
-    updateObject(objectName: string, item: any) : any {
+    updateObject(tableName: string, item: any) : any {
         //Update in DB
-        this.storage.set(objectName + item.id, item);
+        this.storage.set(tableName + item.id, item);
 
         //Update in memory
-        if(this.listLoaded(objectName)) {
-            var foundIndex = this.lists[objectName].findIndex(x => x.id == item.id);
-            this.lists[objectName][foundIndex] = item;
+        if(this.listLoaded(tableName)) {
+            var foundIndex = this.lists[tableName].findIndex(x => x.id == item.id);
+            this.lists[tableName][foundIndex] = item;
 
-            this.refreshList(objectName);
+            this.refreshList(tableName);
         }
+
         return item;
     }
 
     /**
      * Delete an object, in DB and memory
-     * @param objectName 
+     * @param tableName 
      * @param id of item to delete
      */
-    deleteObjectById(objectName: string, id: number) : void {
+    deleteObjectById(tableName: string, id: number) : void {
         //Delete in DB
-        this.storage.remove(objectName + id);
+        this.storage.remove(tableName + id);
 
         //Delete in memory
-        if(this.listLoaded(objectName)) {
-            var foundIndex = this.lists[objectName].findIndex(x => x.id == id);
-            this.lists[objectName].splice(foundIndex, 1);
+        if(this.listLoaded(tableName)) {
+            var foundIndex = this.lists[tableName].findIndex(x => x.id == id);
+            this.lists[tableName].splice(foundIndex, 1);
 
-            this.refreshList(objectName);
+            this.refreshList(tableName);
         }
     }
 
     /**
      * Delete an object, in DB and memory
-     * @param objectName 
+     * @param tableName 
      * @param item 
      */
-    deleteObject(objectName: string, item: any) : void {
-        this.deleteObjectById(objectName, item.id);
+    deleteObject(tableName: string, item: any) : void {
+        this.deleteObjectById(tableName, item.id);
     }
     
     /**
-     * Load values in DB corresponding to the object name (if the list hasn't loaded yet)
-     * @param objectName 
+     * Load values in DB corresponding to the table name (if the list hasn't loaded yet)
+     * @param tableName 
      * @param forceReload : replace memory list by the one in DB
      */
-    loadList(objectName: string, forceReload: boolean = false) : void {
+    loadList(tableName: string, forceReload: boolean = false) : void {
         //List hasn't been loaded yet
-        if(this.lists[objectName] == undefined || forceReload) {
+        if(this.listNotLoad(tableName) || forceReload) {
             //Init list
-            this.listsLoaded[objectName] = false;
-            this.lists[objectName] = [];
+            this.listsLoaded[tableName] = DataStatus.Loading;
+            this.lists[tableName] = [];
 
             this.storage.forEach((value, key, iterationNumber) => {
-                if(key.startsWith(objectName)) {
-                    this.lists[objectName].push(value);
+                if(key.startsWith(tableName)) {
+                    this.lists[tableName].push(value);
                 }
             }).then(() => {
-                this.listsLoaded[objectName] = true;
-                this.refreshList(objectName);
+                this.listsLoaded[tableName] = DataStatus.Loaded;
+                this.refreshList(tableName);
             });
         }
         //Just send signal for refresh
         else {
-            this.refreshList(objectName);
+            this.refreshList(tableName);
         }
     }
 
     /**
      * Return an item from the list in memory
-     * @param objectName 
+     * @param tableName 
      * @param id 
      */
-    getElement(objectName: string, id: number) {
-        //List hasn't been loaded yet
-        if(this.lists[objectName] == undefined) {
-            let observable = this.getListObservable(objectName);
-            observable.subscribe(
-                value => {
-                    observable.unsuscribe();
-                    return lodash.find(value, ['id', id]);
-                },
-                error => console.log(error),
-                () => console.log('done')
-            );
-        }
-        //Already loaded
-        else {
-            return lodash.find(this.lists[objectName], ['id', id]);
-        }
+    getObject(tableName: string, id: number) {
+        return new Promise(function (resolve, reject) {
+            //List currently loading
+            if(this.listLoading(tableName)) {
+                let observable = this.getListObservable(tableName);
+                observable.subscribe(
+                    value => {
+                        observable.unsuscribe();
+                        resolve(lodash.find(value, ['id', id]));
+                    },
+                    error => reject(),
+                    () => console.log('done')
+                );
+            }
+            //List loaded
+            else if(this.listLoaded(tableName)) {
+                resolve(lodash.find(this.lists[tableName], ['id', id]));
+            }
+            //Get directly in DB
+            else {
+                resolve(this.storage.get(tableName + id));
+            }
+        });
     }
 
     /**
@@ -153,19 +165,19 @@ export class StorageService {
      * @param objectName 
      * @param sortFields 
      */
-    setSortFields(objectName: string, sortFields: Array<string> = null) {
-        this.sortFields[objectName] = sortFields;
+    setSortFields(tableName: string, sortFields: Array<string> = null) {
+        this.sortFields[tableName] = sortFields;
     }
 
     /**
      * Return observable on the list of elements
      * @param objectName 
      */
-    getListObservable(objectName: string) {
-        if(this.listObservable[objectName] === undefined) {
-            this.listObservable[objectName] = new EventEmitter();
+    getListObservable(tableName: string) {
+        if(this.listObservable[tableName] === undefined) {
+            this.listObservable[tableName] = new EventEmitter();
         }
-        return this.listObservable[objectName];
+        return this.listObservable[tableName];
     }
 
     /**
@@ -173,11 +185,27 @@ export class StorageService {
      * @param objectName 
      */
     listLoaded(objectName: string) : boolean {
-        return this.listsLoaded[objectName];
+        return this.listsLoaded[objectName] === DataStatus.Loaded;
     }
 
     /**
-     * Send the list (if the list is already in memory, but )
+     * Return true if the wanted list is currently loading in memory
+     * @param objectName 
+     */
+    listLoading(objectName: string) : boolean {
+        return this.listsLoaded[objectName] === DataStatus.Loading;
+    }
+
+    /**
+     * Return true if the wanted list is not load in memory
+     * @param objectName 
+     */
+    listNotLoad(objectName: string) : boolean {
+        return this.listsLoaded[objectName] === DataStatus.NoQuery;
+    }
+
+    /**
+     * Send the list (if the list is already in memory)
      * @param objectName 
      */
     getList(objectName: string) {
@@ -200,59 +228,23 @@ export class StorageService {
             console.log(key + ': ' + value)
         });
     }
-
-    /**
-     * TEST : Mock datas for testing purpose
-     */
-    /*mockDatas() {
-        //2 collections
-        let collection = {"name":"L'héritage"};
-        const heritage = this.addObject(COLLECTION_KEY, collection);
-
-        collection = {"name":"Label 619"};
-        const label619 = this.addObject(COLLECTION_KEY, collection);
-
-        //2 authors
-        let author = {"lastName":"Paolini","firstName":"Christopher"};
-        const paolini = this.addObject(AUTHOR_KEY, author);
-
-        author = {"lastName":"Bablet","firstName":"Mathieu"};
-        const bablet = this.addObject(AUTHOR_KEY, author);
-
-        //2 books
-        let book = {
-            "title":"Eragon",
-            "author":paolini,"authorId":paolini.id,
-            "collection":heritage,"collectionId":heritage.id,
-            "gender":null,"status":0,"read":null};
-
-        this.addObject(BOOK_KEY, book);
-
-        book = {
-            "title":"Shangri-La",
-            "author":bablet,"authorId":bablet.id,
-            "collection":label619,"collectionId":label619.id,
-            "gender":null,"status":0,"read":null};
-
-        this.addObject(BOOK_KEY, book);
-    }*/
     
     /**
-     * Get increment ID for the object
-     * @param objectName 
+     * Get increment ID for the table
+     * @param tableName 
      */
-    private getCurrentIdInDB(objectName: string) {
+    private getCurrentIdInDB(tableName: string) {
         //The key is not loaded yet
-        if(this.key[objectName] === undefined) {
+        if(this.key[tableName] === undefined) {
             this.storage
-                .get(ID + objectName)
+                .get(ID + tableName)
                 .then(value => {
                     if(value != null) {
-                        this.key[objectName] = value;
+                        this.key[tableName] = value;
                     }
                     //Init key value
                     else {
-                        this.key[objectName] = 0;
+                        this.key[tableName] = 0;
                     }
                 });
         }
@@ -261,16 +253,16 @@ export class StorageService {
     /**
      * Order list and send it to observable
      */
-    private refreshList(objectName: string) {
-        if(this.sortFields[objectName] !== null && this.lists[objectName].length !== 0) {
+    private refreshList(tableName: string) {
+        if(this.sortFields[tableName] !== null && this.lists[tableName].length !== 0) {
 
-            this.lists[objectName] = 
-                lodash.sortBy(this.lists[objectName], this.sortFields[objectName]);
+            this.lists[tableName] = 
+                lodash.sortBy(this.lists[tableName], this.sortFields[tableName]);
         }
         
         //Observable defined -> signal
-        if(this.listObservable[objectName] !== undefined) {
-            this.listObservable[objectName].emit(this.lists[objectName]);
+        if(this.listObservable[tableName] !== undefined) {
+            this.listObservable[tableName].emit(this.lists[tableName]);
         }
     }
 }

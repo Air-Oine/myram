@@ -3,11 +3,10 @@ import { NavController, NavParams } from 'ionic-angular';
 import * as lodash from 'lodash';
 
 import { Book, BookStatus } from '../../model/Book';
-import { Author } from '../../model/Author';
 
 import { UiTools } from '../../ui.tools';
-import { StorageService } from '../../storage/storage.service';
-import { DataService, BOOK_KEY, LOAN_KEY, GROUPBY_COLLECTION } from '../../storage/data.service';
+import { BooksService, GROUPBY_COLLECTION } from '../../storage/books.service';
+import { LoansService } from '../../storage/loans.service';
 
 import { AddBookPage } from '../add-book/add-book';
 import { LendPage } from '../lend/lend';
@@ -27,8 +26,8 @@ export class ListPage {
 	constructor(
 		public navCtrl: NavController, 
 		public navParams: NavParams, 
-		public storageService: StorageService,
-		public datas: DataService,
+		public booksService: BooksService,
+		public loansService: LoansService,
 		public uiTools: UiTools) {
 	}
 
@@ -36,8 +35,8 @@ export class ListPage {
 		//this.storageService.clearStorage();
 
 		//Notice that we need books, and launch data recuperation
-		this.datas.setBooksSortFields(['collection.name', 'author.lastName', 'volume', 'title']);
-		this.datas.requireBooks(GROUPBY_COLLECTION);
+		this.booksService.setSortFields(['collection.name', 'author.lastName', 'volume', 'title']);
+		this.booksService.require(GROUPBY_COLLECTION);
 	}
 
 	/**
@@ -48,7 +47,7 @@ export class ListPage {
 		let research = event.target.value;
 
 		if(research && research.length > 2) {
-			this.datas.filterBook(research);
+			this.booksService.filter(research);
 		}
 	}
 
@@ -56,7 +55,7 @@ export class ListPage {
 	 * Cancel research
 	 */
 	cancelSearch() {
-		this.datas.cancelFilterBook();
+		this.booksService.cancelFilter();
 	}
 
 	/**
@@ -88,11 +87,11 @@ export class ListPage {
 	 */
 	returnBook(book: Book) {
 		//Delete loan
-		this.storageService.deleteObjectById(LOAN_KEY, book.loanId);
+		this.loansService.delete(book.loanId);
 
 		//Update reference in book
 		book.loanId = null;
-		this.storageService.updateObject(BOOK_KEY, book);
+		this.booksService.update(book);
 
 		//Show info
 		this.uiTools.toast(book.title + ' has been returned');

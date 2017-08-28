@@ -6,8 +6,10 @@ import { Book, BookStatus } from '../../model/Book';
 import { Friend } from '../../model/Friend';
 import { Loan } from '../../model/Loan';
 
-import { StorageService } from '../../storage/storage.service';
-import { DataService, LOAN_KEY, BOOK_KEY, FRIEND_KEY } from '../../storage/data.service';
+import { BooksService, BOOK_KEY } from '../../storage/books.service';
+import { LoansService } from '../../storage/loans.service';
+import { FriendsService } from '../../storage/friends.service';
+
 import { UiTools } from '../../ui.tools';
 
 @IonicPage()
@@ -27,8 +29,9 @@ export class LendPage {
 	constructor(
 		public navCtrl: NavController, 
 		public navParams: NavParams,
-        public datas: DataService,
-        public storageService: StorageService,
+        public booksService: BooksService,
+        public loansService: LoansService,
+        public friendsService: FriendsService,
         public alertCtrl: AlertController,
         public loadingCtrl: LoadingController,
         public uiTools: UiTools) {
@@ -43,60 +46,37 @@ export class LendPage {
 	}
 
     ionViewWillLoad() {
-        this.datas.requireFriends();
+        this.friendsService.require();
         
-        this.datas.requireLoans();
+        this.loansService.require();
     }
     
 	ionViewDidLoad() {
         //Update
         if(!this.creation) {
-            //Get values
-            //Loan
-            if(this.storageService.listLoaded(LOAN_KEY)) {
-                this.loan = this.storageService.getElement(LOAN_KEY, this.book.loanId);
-            }
-            //Wait the list to be loaded
-            else {
-                //Show loading
-                let loading = this.loadingCtrl.create({
-                    content: ''
-                });
-                loading.present();
+            //Show loading
+            let loading = this.loadingCtrl.create({
+                content: ''
+            });
+            loading.present();
 
-                const obs = this.storageService.getListObservable(LOAN_KEY);
-                obs.subscribe(
-                    value => {
-                        this.loan = this.storageService.getElement(LOAN_KEY, this.book.loanId);
+            console.log("load");
+            //Get Loan
+            this.loansService.get(this.book.loanId)
+            .then((loan: Loan) => {
+                this.loan = loan;
+                console.log(loan)
 
-                        //Friend
-                        if(this.storageService.listLoaded(FRIEND_KEY)) {
-                            this.loan.friend = this.storageService.getElement(FRIEND_KEY, this.loan.friendId);
-                            this.friendSelected = this.loan.friend ? true : false;
+                //Get friend
+                return this.friendsService.get(this.loan.friendId);
+            })
+            .then((friend: Friend) => {
+                this.loan.friend = friend;
+                this.friendSelected = this.loan.friend ? true : false;
 
-                            loading.dismiss();
-                        }
-                        //Wait the list to be loaded
-                        else {
-                            const obs = this.storageService.getListObservable(FRIEND_KEY);
-                            obs.subscribe(
-                                value => {
-                                    this.loan.friend = this.storageService.getElement(FRIEND_KEY, this.loan.friendId);
-                                    this.friendSelected = this.loan.friend ? true : false;
-
-                                    //Data recuperation done
-                                    loading.dismiss();
-                                    obs.complete();
-                                },
-                                error => console.log(error),
-                                () => console.log('done')
-                            );
-                        }
-                    },
-                    error => console.log(error),
-                    () => console.log('done')
-                );
-            }
+                //Data recuperation done
+                loading.dismiss();
+            });
         }
 	}
 
@@ -112,7 +92,7 @@ export class LendPage {
 		if (research && research.length > 2) {
 			research = research.trim().toLowerCase();
 
-			this.searchFriendList = this.datas.getFriends().filter((item) => {
+			this.searchFriendList = this.friendsService.getList().filter((item) => {
                 return item.firstName.toLowerCase().indexOf(research) > -1 ||
                     item.lastName.toLowerCase().indexOf(research) > -1;
 			})
@@ -158,7 +138,7 @@ export class LendPage {
                             const newFriend = new Friend(lastName, firstName);
 
                             //Saving the friend, and select him
-                            this.loan.friend = this.datas.addFriend(newFriend);
+                            this.loan.friend = this.friendsService.add(newFriend);
 
                             this.friendSelected = true;
                         }
@@ -179,16 +159,16 @@ export class LendPage {
 
         //Save the loan
         if(this.creation) {
-            this.loan = this.storageService.addObject(LOAN_KEY, this.loan);
+            this.loan = this.loansService.add(this.loan);
 
             //Update loan ID of the book
             this.book.loanId = this.loan.id;
-            this.storageService.updateObject(BOOK_KEY, this.book);
+            this.booksService.update(this.book);
 
             this.uiTools.toast(this.loan.friend.firstName + ' has borrowed ' + this.book.title);
         }
         else {
-            this.storageService.updateObject(LOAN_KEY, this.loan);
+            this.loansService.update(this.loan);
 
             this.uiTools.toast('The loan made to ' + this.loan.friend.firstName + ' has been updated');
         }
