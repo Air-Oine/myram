@@ -15,6 +15,7 @@ import { LendPage } from '../pages/lend/lend';
 import { UiTools } from '../ui.tools';
 import { StorageService } from '../storage/storage.service';
 import { DataService } from '../storage/data.service';
+import { FriendsService } from '../storage/friends.service';
 import { ISBNService } from '../storage/isbn.service';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -46,6 +47,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     UiTools,
     StorageService,
     DataService,
+    FriendsService,
     ISBNService,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
   ]

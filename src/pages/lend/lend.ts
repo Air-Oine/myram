@@ -7,6 +7,7 @@ import { Friend } from '../../model/Friend';
 import { Loan } from '../../model/Loan';
 
 import { StorageService } from '../../storage/storage.service';
+import { FriendsService } from '../../storage/friends.service';
 import { DataService, LOAN_KEY, BOOK_KEY, FRIEND_KEY } from '../../storage/data.service';
 import { UiTools } from '../../ui.tools';
 
@@ -29,6 +30,7 @@ export class LendPage {
 		public navParams: NavParams,
         public datas: DataService,
         public storageService: StorageService,
+        public friendsService: FriendsService,
         public alertCtrl: AlertController,
         public loadingCtrl: LoadingController,
         public uiTools: UiTools) {
@@ -43,7 +45,7 @@ export class LendPage {
 	}
 
     ionViewWillLoad() {
-        this.datas.requireFriends();
+        this.friendsService.require();
         
         this.datas.requireLoans();
     }
@@ -112,7 +114,7 @@ export class LendPage {
 		if (research && research.length > 2) {
 			research = research.trim().toLowerCase();
 
-			this.searchFriendList = this.datas.getFriends().filter((item) => {
+			this.searchFriendList = this.friendsService.getList().filter((item) => {
                 return item.firstName.toLowerCase().indexOf(research) > -1 ||
                     item.lastName.toLowerCase().indexOf(research) > -1;
 			})
@@ -158,7 +160,7 @@ export class LendPage {
                             const newFriend = new Friend(lastName, firstName);
 
                             //Saving the friend, and select him
-                            this.loan.friend = this.datas.addFriend(newFriend);
+                            this.loan.friend = this.friendsService.add(newFriend);
 
                             this.friendSelected = true;
                         }

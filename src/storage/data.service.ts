@@ -68,45 +68,6 @@ export class DataService {
         this.storageService.setSortFields(AUTHOR_KEY, sortFields);
     }
 
-    //FRIEND
-
-    /**
-     * Handle data recuperation in DB for table Friend
-     */
-    requireFriends() {
-        if(this.friends == null) {
-            this.observables[FRIEND_KEY] = this.storageService.getListObservable(FRIEND_KEY);
-            this.observables[FRIEND_KEY].subscribe(
-                value => this.friends = value,
-                error => console.log(error),
-                () => console.log('done')
-            );
-
-            this.setFriendsSortFields(['lastName', 'firstName']);
-            this.storageService.init(FRIEND_KEY);
-            this.storageService.loadList(FRIEND_KEY);
-        }
-    }
-
-    addFriend(friend: Friend) : Friend {
-        return this.storageService.addObject(FRIEND_KEY, friend);
-    }
-
-    /**
-     * Return the list of friends
-     */
-    getFriends() : Array<Friend> {
-        return this.friends;
-    }
-
-    /**
-     * Set the order of the list of friends
-     * @param sortFields 
-     */
-    setFriendsSortFields(sortFields: Array<string> = null) {
-        this.storageService.setSortFields(FRIEND_KEY, sortFields);
-    }
-
     //LOAN
 
     /**
@@ -121,7 +82,7 @@ export class DataService {
                 () => console.log('done')
             );
 
-            this.setAuthorsSortFields(['date']);
+            this.setLoansSortFields(['date']);
             this.storageService.init(LOAN_KEY);
             this.storageService.loadList(LOAN_KEY);
         }
