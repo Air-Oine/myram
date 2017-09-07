@@ -22,6 +22,23 @@
 <ion-content padding>
     <form #form="ngForm">
 
+        <!--ISBN  -->
+		<ion-item>
+			<ion-label i18n="@@AddBook.label.isbn">ISBN</ion-label>
+			<ion-input 
+				type="numeric"
+				name="isbn" [(ngModel)]="isbn"></ion-input>
+		</ion-item>
+
+		<button ion-button full
+			type="submit" 
+			(click)="getIsbnInfo()"
+			[disabled]="false"
+            i18n="@@AddBook.button.save">Save</button>
+            
+        <!--COVER  -->
+        <ion-img *ngIf="book.coverMediumUrl" width="80" height="80" [src]="book.coverMediumUrl"></ion-img>
+
         <!--TITLE  -->
         <ion-item>
             <ion-label i18n="@@AddBook.label.title">Title</ion-label>

@@ -62,7 +62,11 @@ export class ListPage {
 	/**
 	 * Go to book creation page
 	 */
-	addItem() {
+	goToManualCreationpage() {
+		this.navCtrl.push(AddBookPage);
+	}
+
+	goToIsbnCreation() {
 		this.navCtrl.push(AddBookPage);
 	}
 

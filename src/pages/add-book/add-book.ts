@@ -8,6 +8,7 @@ import { Collection } from '../../model/Collection';
 
 import { StorageService } from '../../storage/storage.service';
 import { DataService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from '../../storage/data.service';
+import { ISBNService } from '../../storage/isbn.service';
 import { UiTools } from '../../ui.tools';
 
 @IonicPage()
@@ -21,6 +22,7 @@ export class AddBookPage {
     
     creation: boolean;
     book: Book;
+    isbn: number;
 
     collectionSelected: boolean;
     searchCollectionList: Array<Collection> = [];
@@ -33,6 +35,7 @@ export class AddBookPage {
         public navParams: NavParams,
         public storageService: StorageService,
         public datas: DataService,
+        public isbnService: ISBNService,
         public alertCtrl: AlertController,
         public uiTools: UiTools) {
 
@@ -66,6 +69,14 @@ export class AddBookPage {
         this.datas.requireCollections();
     }
 
+    getIsbnInfo() {
+		this.isbnService.getBookInfo(this.isbn).then(value => {
+			console.log(value);
+			this.book = value;
+			this.book.coverMediumUrl = 'http://localhost:8080/' + this.book.coverMediumUrl;
+		})
+    }
+    
     /**
      * Show collections matching research
      * @param event 

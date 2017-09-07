@@ -17,7 +17,10 @@ export class Book {
         public status: BookStatus = BookStatus.None,
         public loanId: number = null,
         public read: boolean = null,
-        public volume: number = null) {
+        public volume: number = null,
+        public coverSmallUrl: string = null,
+        public coverMediumUrl: string = null,
+        public coverLargeUrl: string = null) {
 
     }
 }

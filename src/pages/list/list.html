@@ -78,11 +78,14 @@
     </ion-list>
 
     <!--NEW ITEM BUTTON  -->
-    <ion-fab bottom right>
+    <!-- <ion-fab bottom right>
         <button ion-fab (click)="addItem()"><ion-icon name="add"></ion-icon></button>
+    </ion-fab> -->
+    <ion-fab bottom right >
+        <button ion-fab><ion-icon name="add"></ion-icon></button>
+        <ion-fab-list side="top">
+            <button ion-fab (click)="goToIsbnCreation()">ISBN</button>
+            <button ion-fab (click)="goToManualCreationpage()">Manual</button>
+        </ion-fab-list>
     </ion-fab>
-
-    <div *ngIf="selectedItem" padding>
-        You navigated here from <b>{{selectedItem.title}}</b>
-    </div>
 </ion-content>
