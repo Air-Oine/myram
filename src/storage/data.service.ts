@@ -68,41 +68,6 @@ export class DataService {
         this.storageService.setSortFields(AUTHOR_KEY, sortFields);
     }
 
-    //LOAN
-
-    /**
-     * Handle data recuperation in DB for table Loan
-     */
-    requireLoans() {
-        if(this.loans == null) {
-            this.observables[LOAN_KEY] = this.storageService.getListObservable(LOAN_KEY);
-            this.observables[LOAN_KEY].subscribe(
-                value => this.loans = value,
-                error => console.log(error),
-                () => console.log('done')
-            );
-
-            this.setLoansSortFields(['date']);
-            this.storageService.init(LOAN_KEY);
-            this.storageService.loadList(LOAN_KEY);
-        }
-    }
-
-    /**
-     * Return the list of loans
-     */
-    getLoans() : Array<Loan> {
-        return this.loans;
-    }
-
-    /**
-     * Set the order of the list of loans
-     * @param sortFields 
-     */
-    setLoansSortFields(sortFields: Array<string> = null) {
-        this.storageService.setSortFields(LOAN_KEY, sortFields);
-    }
-
     //COLLECTION
 
     /**

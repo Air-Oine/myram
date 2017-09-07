@@ -16,6 +16,7 @@ import { UiTools } from '../ui.tools';
 import { StorageService } from '../storage/storage.service';
 import { DataService } from '../storage/data.service';
 import { FriendsService } from '../storage/friends.service';
+import { LoansService } from '../storage/loans.service';
 import { ISBNService } from '../storage/isbn.service';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -48,6 +49,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     StorageService,
     DataService,
     FriendsService,
+    LoansService,
     ISBNService,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
   ]

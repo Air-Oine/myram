@@ -9,6 +9,7 @@ import { Loan } from '../../model/Loan';
 import { StorageService } from '../../storage/storage.service';
 import { FriendsService } from '../../storage/friends.service';
 import { DataService, LOAN_KEY, BOOK_KEY, FRIEND_KEY } from '../../storage/data.service';
+import { LoansService } from '../../storage/loans.service';
 import { UiTools } from '../../ui.tools';
 
 @IonicPage()
@@ -31,6 +32,7 @@ export class LendPage {
         public datas: DataService,
         public storageService: StorageService,
         public friendsService: FriendsService,
+        public loansService: LoansService,
         public alertCtrl: AlertController,
         public loadingCtrl: LoadingController,
         public uiTools: UiTools) {
@@ -47,7 +49,7 @@ export class LendPage {
     ionViewWillLoad() {
         this.friendsService.require();
         
-        this.datas.requireLoans();
+        this.loansService.require();
     }
     
 	ionViewDidLoad() {
