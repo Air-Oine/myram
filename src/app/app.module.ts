@@ -3,7 +3,11 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { IonicStorageModule } from '@ionic/storage';
 
+//Components
 import { MyApp } from './app.component';
+import { IsbnComponent } from '../components/isbn/isbn';
+
+//Pages
 import { ListPage } from '../pages/list/list';
 import { AddBookPage } from '../pages/add-book/add-book';
 import { LendPage } from '../pages/lend/lend';
@@ -21,7 +25,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     MyApp,
     ListPage,
     AddBookPage,
-    LendPage
+    LendPage,
+    IsbnComponent,
   ],
   imports: [
     BrowserModule,

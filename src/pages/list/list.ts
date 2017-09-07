@@ -9,7 +9,7 @@ import { UiTools } from '../../ui.tools';
 import { StorageService } from '../../storage/storage.service';
 import { DataService, BOOK_KEY, LOAN_KEY, GROUPBY_COLLECTION } from '../../storage/data.service';
 
-import { AddBookPage } from '../add-book/add-book';
+import { AddBookPage, CREATION_MODE, CreationMode } from '../add-book/add-book';
 import { LendPage } from '../lend/lend';
 
 @Component({
@@ -63,11 +63,11 @@ export class ListPage {
 	 * Go to book creation page
 	 */
 	goToManualCreationpage() {
-		this.navCtrl.push(AddBookPage);
+		this.navCtrl.push(AddBookPage, {CREATION_MODE: CreationMode.MANUAL});
 	}
 
 	goToIsbnCreation() {
-		this.navCtrl.push(AddBookPage);
+		this.navCtrl.push(AddBookPage, {CREATION_MODE: CreationMode.ISBN});
 	}
 
 	/**
@@ -75,7 +75,8 @@ export class ListPage {
 	 * @param book
 	 */
 	modifyBook(book: Book) {
-		this.navCtrl.push(AddBookPage, {book});
+		const params = {CREATION_MODE: CreationMode.MANUAL, book};
+		this.navCtrl.push(AddBookPage, params);
 	}
 
 	/**

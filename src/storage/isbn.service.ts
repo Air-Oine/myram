@@ -28,7 +28,6 @@ export class ISBNService {
                     //Extracting object from JS
                     let stringObject = val.split(isbn + '": ')[1];
                     const book = JSON.parse(stringObject.substr(0, stringObject.length-2));
-                    console.log(book);
 
                     //Authors
                     const authorString = book.authors[0].name;

@@ -6,10 +6,13 @@ import { Book, BookStatus } from '../../model/Book';
 import { Author } from '../../model/Author';
 import { Collection } from '../../model/Collection';
 
+import { UiTools } from '../../ui.tools';
 import { StorageService } from '../../storage/storage.service';
 import { DataService, AUTHOR_KEY, BOOK_KEY, COLLECTION_KEY } from '../../storage/data.service';
-import { ISBNService } from '../../storage/isbn.service';
-import { UiTools } from '../../ui.tools';
+import { IsbnComponent } from '../../components/isbn/isbn';
+
+export enum CreationMode {MANUAL, ISBN};
+export const CREATION_MODE = 'CREATION_MODE';
 
 @IonicPage()
 @Injectable()
@@ -18,11 +21,14 @@ import { UiTools } from '../../ui.tools';
     templateUrl: 'add-book.html',
 })
 export class AddBookPage {
+    //Enum instanciation
     BookStatus = BookStatus;
+    CreationMode = CreationMode;
     
+    showForm: boolean;
+    creationMode : CreationMode;
     creation: boolean;
     book: Book;
-    isbn: number;
 
     collectionSelected: boolean;
     searchCollectionList: Array<Collection> = [];
@@ -35,20 +41,20 @@ export class AddBookPage {
         public navParams: NavParams,
         public storageService: StorageService,
         public datas: DataService,
-        public isbnService: ISBNService,
         public alertCtrl: AlertController,
         public uiTools: UiTools) {
 
+        this.creationMode = navParams.get(CREATION_MODE);
         let bookToModify = navParams.get(BOOK_KEY);
+
+        //Show form immediately (only in manual mode)
+        this.showForm = this.creationMode === CreationMode.MANUAL;
 
         //Update
         if(bookToModify) {
             this.creation = false;
 
-            this.book = bookToModify;
-
-            this.authorSelected = this.book.author ? true : false;
-            this.collectionSelected = this.book.collection ? true : false;
+            this.initBookValue(bookToModify);
         }
         else {
             this.creation = true;
@@ -68,15 +74,25 @@ export class AddBookPage {
         //COLLECTIONS
         this.datas.requireCollections();
     }
-
-    getIsbnInfo() {
-		this.isbnService.getBookInfo(this.isbn).then(value => {
-			console.log(value);
-			this.book = value;
-			this.book.coverMediumUrl = 'http://localhost:8080/' + this.book.coverMediumUrl;
-		})
-    }
     
+    /**
+     * Fill form and set appopriates values
+     * @param book 
+     */
+    private initBookValue(book: Book) {
+        this.book = book;
+
+        this.authorSelected = this.book.author ? true : false;
+        this.collectionSelected = this.book.collection ? true : false;
+    }
+
+    isbnSearchDone(book: Book) {
+        console.log("Book laoded" + book);
+        this.initBookValue(book);
+        
+        this.showForm = true;
+    }
+
     /**
      * Show collections matching research
      * @param event 

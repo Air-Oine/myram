@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar>
+    <ion-navbar color="primary">
         <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
@@ -20,130 +20,125 @@
 </ion-header>
 
 <ion-content padding>
+
     <form #form="ngForm">
 
         <!--ISBN  -->
-		<ion-item>
-			<ion-label i18n="@@AddBook.label.isbn">ISBN</ion-label>
-			<ion-input 
-				type="numeric"
-				name="isbn" [(ngModel)]="isbn"></ion-input>
-		</ion-item>
+        <isbn-search *ngIf="this.creationMode === CreationMode.ISBN"
+            (bookLoaded)="isbnSearchDone($event)"></isbn-search>
 
-		<button ion-button full
-			type="submit" 
-			(click)="getIsbnInfo()"
-			[disabled]="false"
-            i18n="@@AddBook.button.save">Save</button>
-            
-        <!--COVER  -->
-        <ion-img *ngIf="book.coverMediumUrl" width="80" height="80" [src]="book.coverMediumUrl"></ion-img>
+        <!--FORM  -->
+        <div *ngIf="this.showForm">
 
-        <!--TITLE  -->
-        <ion-item>
-            <ion-label i18n="@@AddBook.label.title">Title</ion-label>
-            <ion-input 
-                type="text"
-                name="title" [(ngModel)]="book.title"
-                required></ion-input>
-        </ion-item>
+            <!--COVER  -->
+            <ion-img *ngIf="book.coverMediumUrl" width="80" height="80" [src]="book.coverMediumUrl"></ion-img>
 
-        <!--AUTHOR  -->
-        <ion-grid no-padding>
-            <ion-row justify-content-between>
-                <ion-col col-9>
-                    <ion-item>
-                        <ion-label i18n="@@AddBook.label.author">Author</ion-label>
-                        <ion-input *ngIf="!authorSelected"
-                            type="text"
-                            name="author" [(ngModel)]="book.author"
-                            (input)="searchAuthor($event)"
-                            required></ion-input>
-                        <ion-label *ngIf="authorSelected"
-                            color="dark">
-                            {{book.author.firstName}} {{book.author.lastName}}</ion-label>
-                    </ion-item>
-                    <!--AUTHORS RESEARCH LIST  -->
-                    <ion-list *ngIf="!authorSelected">
-                        <ion-item *ngFor="let author of searchAuthorList"
-                            (click)="selectExistingAuthor(author)">
-                            <ion-label>{{author.firstName}} {{author.lastName}}</ion-label>
-                        </ion-item>
-                    </ion-list>
-                </ion-col>
-                <ion-col col-auto align-items-start>
-                    <!--ADD AUTHOR  -->
-                    <button ion-button icon-only item-end
-                        (click)="showAlertAddAuthor()">
-                        <ion-icon name="add"></ion-icon>
-                    </button>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-        
-        <!--COLLECTION  -->
-        <ion-item>
-            <ion-label i18n="@@AddBook.label.collection">Collection</ion-label>
-            <ion-input 
-                type="text"
-                name="collection" [(ngModel)]="book.collection.name"
-                (input)="searchCollection($event)"></ion-input>
-        </ion-item>
-        <!--COLLECTIONS RESEARCH LIST  -->
-        <ion-list *ngIf="!collectionSelected">
-            <ion-item *ngFor="let collec of searchCollectionList"
-                (click)="selectExistingCollection(collec)">
-                <ion-label>{{collec.name}}</ion-label>
+            <!--TITLE  -->
+            <ion-item>
+                <ion-label i18n="@@AddBook.label.title">Title</ion-label>
+                <ion-input 
+                    type="text"
+                    name="title" [(ngModel)]="book.title"
+                    required></ion-input>
             </ion-item>
-        </ion-list>
 
-        <!--VOLUME  -->
-        <ion-item *ngIf="book.collection.name !== ''">
-            <ion-label i18n="@@AddBook.label.volume">Volume</ion-label>
-            <ion-input 
-                type="number"
-                name="volume" [(ngModel)]="book.volume"
-                min=0></ion-input>
-        </ion-item>
+            <!--AUTHOR  -->
+            <ion-grid no-padding>
+                <ion-row justify-content-between>
+                    <ion-col col-9>
+                        <ion-item>
+                            <ion-label i18n="@@AddBook.label.author">Author</ion-label>
+                            <ion-input *ngIf="!authorSelected"
+                                type="text"
+                                name="author" [(ngModel)]="book.author"
+                                (input)="searchAuthor($event)"
+                                required></ion-input>
+                            <ion-label *ngIf="authorSelected"
+                                color="dark">
+                                {{book.author.firstName}} {{book.author.lastName}}</ion-label>
+                        </ion-item>
+                        <!--AUTHORS RESEARCH LIST  -->
+                        <ion-list *ngIf="!authorSelected">
+                            <ion-item *ngFor="let author of searchAuthorList"
+                                (click)="selectExistingAuthor(author)">
+                                <ion-label>{{author.firstName}} {{author.lastName}}</ion-label>
+                            </ion-item>
+                        </ion-list>
+                    </ion-col>
+                    <ion-col col-auto align-items-start>
+                        <!--ADD AUTHOR  -->
+                        <button ion-button icon-only item-end
+                            (click)="showAlertAddAuthor()">
+                            <ion-icon name="add"></ion-icon>
+                        </button>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+            
+            <!--COLLECTION  -->
+            <ion-item>
+                <ion-label i18n="@@AddBook.label.collection">Collection</ion-label>
+                <ion-input 
+                    type="text"
+                    name="collection" [(ngModel)]="book.collection.name"
+                    (input)="searchCollection($event)"></ion-input>
+            </ion-item>
+            <!--COLLECTIONS RESEARCH LIST  -->
+            <ion-list *ngIf="!collectionSelected">
+                <ion-item *ngFor="let collec of searchCollectionList"
+                    (click)="selectExistingCollection(collec)">
+                    <ion-label>{{collec.name}}</ion-label>
+                </ion-item>
+            </ion-list>
 
-        <!--BOOK STATUS  -->
-        <ion-segment name="status" [(ngModel)]="book.status">
-            <ion-segment-button [value]="BookStatus.Wanted"
-                i18n="@AddBook.label.status.wanted">
-                <ion-icon name="search"></ion-icon>
-                Wanted
-            </ion-segment-button>
-            <ion-segment-button [value]="BookStatus.Owned"
-                i18n="@AddBook.label.status.owned">
-                <ion-icon name="book"></ion-icon>
-                Owned
-            </ion-segment-button>
-            <ion-segment-button [value]="BookStatus.None"
-                i18n="@AddBook.label.status.none">
-                <ion-icon name="close"></ion-icon>
-                None
-            </ion-segment-button>
-        </ion-segment>
-        
-        <!--READ STATUS  -->
-        <ion-segment name="read" [(ngModel)]="book.read">
-            <ion-segment-button [value]="true"
-                i18n="@AddBook.label.read.read">
-                <ion-icon name="checkmark"></ion-icon>
-                Read
-            </ion-segment-button>
-            <ion-segment-button [value]="false"
-                i18n="@AddBook.label.read.unread">
-                <ion-icon name="close"></ion-icon>
-                Unread
-            </ion-segment-button>
-        </ion-segment>
+            <!--VOLUME  -->
+            <ion-item *ngIf="book.collection.name !== ''">
+                <ion-label i18n="@@AddBook.label.volume">Volume</ion-label>
+                <ion-input 
+                    type="number"
+                    name="volume" [(ngModel)]="book.volume"
+                    min=0></ion-input>
+            </ion-item>
 
-        <!--SUBMIT  -->
-        <button ion-button full
-            type="submit" 
-            (click)="save(form)"
-            [disabled]="form.invalid || !authorSelected"
-            i18n="@@AddBook.button.save">Save</button>
+            <!--BOOK STATUS  -->
+            <ion-segment name="status" [(ngModel)]="book.status">
+                <ion-segment-button [value]="BookStatus.Wanted"
+                    i18n="@AddBook.label.status.wanted">
+                    <ion-icon name="search"></ion-icon>
+                    Wanted
+                </ion-segment-button>
+                <ion-segment-button [value]="BookStatus.Owned"
+                    i18n="@AddBook.label.status.owned">
+                    <ion-icon name="book"></ion-icon>
+                    Owned
+                </ion-segment-button>
+                <ion-segment-button [value]="BookStatus.None"
+                    i18n="@AddBook.label.status.none">
+                    <ion-icon name="close"></ion-icon>
+                    None
+                </ion-segment-button>
+            </ion-segment>
+            
+            <!--READ STATUS  -->
+            <ion-segment name="read" [(ngModel)]="book.read">
+                <ion-segment-button [value]="true"
+                    i18n="@AddBook.label.read.read">
+                    <ion-icon name="checkmark"></ion-icon>
+                    Read
+                </ion-segment-button>
+                <ion-segment-button [value]="false"
+                    i18n="@AddBook.label.read.unread">
+                    <ion-icon name="close"></ion-icon>
+                    Unread
+                </ion-segment-button>
+            </ion-segment>
+
+            <!--SUBMIT  -->
+            <button ion-button full
+                type="submit" 
+                (click)="save(form)"
+                [disabled]="form.invalid || !authorSelected"
+                i18n="@@AddBook.button.save">Save</button>
+        </div>
     </form>
 </ion-content>

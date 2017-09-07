@@ -1,4 +1,17 @@
-<!-- Generated template for the IsbnComponent component -->
-<div>
-  {{text}}
-</div>
+<ion-item>
+	<ion-label i18n="@@Isbn.label">ISBN</ion-label>
+	<ion-input 
+		type="numeric"
+		min=10
+		name="isbn" [(ngModel)]="isbn"></ion-input>
+</ion-item>
+
+<button ion-button full icon-start
+	type="submit" 
+	(click)="getIsbnInfo()"
+	[disabled]="!formIsValid() || searchInProgress"
+	i18n="@@Isbn.button.save">
+	<ion-icon *ngIf="searchInProgress" 
+		name="cloud-download"></ion-icon>
+	Search
+</button>
